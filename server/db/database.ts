@@ -1140,19 +1140,150 @@ export function getInitialSeedData(): DatabaseSchema {
   };
 }
 
+/**
+ * Safe, idempotent demo rolling departure maintenance.
+ * Ensures valid future OPEN departures covering today + the next 30 days
+ * for all active packages.
+ *
+ * Rules:
+ * - Does NOT delete bookings, customers, payments, or historical departures.
+ * - Does NOT overwrite or change departures with existing bookings or operational changes.
+ * - Does NOT duplicate departures if one already exists for (package_id, date, start_time).
+ * - Leaves existing departures intact (status, capacity, notes).
+ * - Only creates missing future demo departures.
+ */
+export function ensureDemoFutureDepartures(db: DatabaseSchema): number {
+  const orgId = DEFAULT_ORG_ID;
+  const now = new Date();
+  const baseDate = new Date();
+  baseDate.setHours(0, 0, 0, 0);
+
+  // Standard package schedule definitions matching demo catalog
+  const scheduleConfigs: Record<
+    string,
+    Array<{ time: string; meetingMinutesBefore: number; duration: number; cap: number }>
+  > = {
+    'pkg-neretva-classic': [
+      { time: '09:30', meetingMinutesBefore: 45, duration: 360, cap: 36 },
+      { time: '10:30', meetingMinutesBefore: 45, duration: 360, cap: 44 },
+    ],
+    'pkg-neretva-adrenaline': [
+      { time: '11:30', meetingMinutesBefore: 45, duration: 420, cap: 24 },
+    ],
+    'pkg-neretva-family-chill': [
+      { time: '14:00', meetingMinutesBefore: 30, duration: 240, cap: 30 },
+    ],
+  };
+
+  const activePackages = db.packages.filter((p) => p.active);
+  let addedCount = 0;
+
+  // Cover today + next 30 days (0 through 30 = 31 days)
+  for (let d = 0; d <= 30; d++) {
+    const curDay = new Date(baseDate);
+    curDay.setDate(curDay.getDate() + d);
+
+    const yyyy = curDay.getFullYear();
+    const mm = String(curDay.getMonth() + 1).padStart(2, '0');
+    const dd = String(curDay.getDate()).padStart(2, '0');
+    const dateStr = `${yyyy}-${mm}-${dd}`;
+
+    for (const pkg of activePackages) {
+      let slots = scheduleConfigs[pkg.id];
+      if (!slots || slots.length === 0) {
+        // Fallback to departure_templates if package has custom templates
+        const tmpls = db.departure_templates.filter(
+          (t) => t.package_id === pkg.id && t.active && t.days_of_week.includes(curDay.getDay())
+        );
+        if (tmpls.length > 0) {
+          slots = tmpls.map((t) => ({
+            time: t.time_of_day,
+            meetingMinutesBefore: 45,
+            duration: pkg.duration_minutes || 360,
+            cap: t.capacity_limit,
+          }));
+        } else {
+          slots = [{ time: '10:00', meetingMinutesBefore: 45, duration: pkg.duration_minutes || 360, cap: 30 }];
+        }
+      }
+
+      for (let idx = 0; idx < slots.length; idx++) {
+        const slot = slots[idx];
+        const [h, m] = slot.time.split(':').map(Number);
+        const startAt = new Date(curDay);
+        startAt.setHours(h, m, 0, 0);
+
+        const isoStart = startAt.toISOString();
+
+        // Idempotency check:
+        // Check whether a departure already exists for this package, date, and start time
+        const alreadyExists = db.departures.some((dep) => {
+          if (dep.package_id !== pkg.id) return false;
+          if (dep.start_at === isoStart) return true;
+          const depDate = new Date(dep.start_at);
+          const depYyyy = depDate.getFullYear();
+          const depMm = String(depDate.getMonth() + 1).padStart(2, '0');
+          const depDd = String(depDate.getDate()).padStart(2, '0');
+          const depDateStr = `${depYyyy}-${depMm}-${depDd}`;
+          const depH = depDate.getHours();
+          const depM = depDate.getMinutes();
+          return depDateStr === dateStr && depH === h && depM === m;
+        });
+
+        if (!alreadyExists) {
+          const meetingAt = new Date(startAt);
+          meetingAt.setMinutes(meetingAt.getMinutes() - slot.meetingMinutesBefore);
+
+          const endAt = new Date(startAt);
+          endAt.setMinutes(endAt.getMinutes() + slot.duration);
+
+          const depId = `dep-${dateStr}-${slot.time.replace(':', '')}-${pkg.id.replace('pkg-', '').substring(0, 8)}`;
+          const nowStr = now.toISOString();
+
+          db.departures.push({
+            id: depId,
+            organization_id: pkg.organization_id || orgId,
+            package_id: pkg.id,
+            start_at: isoStart,
+            meeting_at: meetingAt.toISOString(),
+            expected_end_at: endAt.toISOString(),
+            capacity_limit: slot.cap,
+            status: DepartureStatus.OPEN,
+            operational_status: OperationalStatus.NORMAL,
+            public_message_bs: 'Polazak po planu sa baze Džajića Buk.',
+            public_message_en: 'Scheduled departure from Džajića Buk base.',
+            internal_notes: 'Standardni logistički plan, kombi prevoz spreman.',
+            created_at: nowStr,
+            updated_at: nowStr,
+          });
+          addedCount++;
+        }
+      }
+    }
+  }
+
+  return addedCount;
+}
+
 export function getDatabase(): DatabaseSchema {
   if (!dbState) {
     if (fs.existsSync(DB_FILE_PATH)) {
       try {
         const raw = fs.readFileSync(DB_FILE_PATH, 'utf-8');
         dbState = JSON.parse(raw);
+        const added = ensureDemoFutureDepartures(dbState);
+        if (added > 0) {
+          saveDatabase(dbState);
+        }
       } catch (err) {
         console.error('Error reading database file, initializing seed:', err);
         dbState = getInitialSeedData();
+        ensureDemoFutureDepartures(dbState);
         saveDatabase(dbState);
       }
     } else {
       dbState = getInitialSeedData();
+      ensureDemoFutureDepartures(dbState);
       saveDatabase(dbState);
     }
   }

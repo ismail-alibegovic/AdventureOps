@@ -2,6 +2,7 @@ import { DatabaseSchema, getDatabase } from '../db/database';
 import { Departure, BookingStatus, DepartureStatus, OperationalStatus } from '../../src/types';
 
 export interface DepartureAvailability {
+  id?: string;
   departure_id: string;
   package_id: string;
   start_at: string;
@@ -10,6 +11,7 @@ export interface DepartureAvailability {
   capacity_limit: number;
   reserved_guests: number;
   available_capacity: number;
+  spots_left?: number;
   status: DepartureStatus;
   operational_status: OperationalStatus;
   is_available: boolean;
@@ -48,6 +50,7 @@ export class AvailabilityService {
       available > 0;
 
     return {
+      id: departure.id,
       departure_id: departure.id,
       package_id: departure.package_id,
       start_at: departure.start_at,
@@ -56,6 +59,7 @@ export class AvailabilityService {
       capacity_limit: departure.capacity_limit,
       reserved_guests: reserved,
       available_capacity: available,
+      spots_left: available,
       status: departure.status,
       operational_status: departure.operational_status,
       is_available: isAvailable,
@@ -73,6 +77,7 @@ export class AvailabilityService {
     date?: string // YYYY-MM-DD
   ): DepartureAvailability[] {
     const db = getDatabase();
+    const now = new Date();
     return db.departures
       .filter((dep) => {
         if (dep.organization_id !== orgId) return false;
@@ -80,6 +85,11 @@ export class AvailabilityService {
         if (date) {
           const depDate = dep.start_at.split('T')[0];
           if (depDate !== date) return false;
+        }
+        // Exclude departures whose start time has already passed for public booking
+        const depStart = new Date(dep.start_at);
+        if (depStart.getTime() <= now.getTime()) {
+          return false;
         }
         // Only return open or full departures (filter out completely cancelled or completed if in the past)
         return dep.status === DepartureStatus.OPEN || dep.status === DepartureStatus.FULL;
@@ -94,12 +104,16 @@ export class AvailabilityService {
   static getAvailableDatesForMonth(orgId: string, packageId: string, year: number, month: number): Array<{ date: string; has_availability: boolean; spots_left: number }> {
     const db = getDatabase();
     const result: Record<string, { totalSpots: number; hasOpen: boolean }> = {};
+    const now = new Date();
 
     db.departures.forEach((dep) => {
       if (dep.organization_id !== orgId) return;
       if (packageId && dep.package_id !== packageId) return;
 
       const d = new Date(dep.start_at);
+      // Skip past departure times
+      if (d.getTime() <= now.getTime()) return;
+
       if (d.getFullYear() === year && d.getMonth() + 1 === month) {
         const dateKey = dep.start_at.split('T')[0];
         const avail = this.getDepartureAvailability(db, dep);

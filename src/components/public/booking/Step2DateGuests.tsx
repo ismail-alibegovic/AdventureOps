@@ -49,12 +49,17 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
   language,
 }) => {
   const totalGuests = adultCount + childCount;
-  const selectedDep = departures.find((d) => d.id === selectedDepartureId);
-  const isOverCapacity = selectedDep && selectedDep.spots_left < totalGuests;
+  const selectedDep = departures.find(
+    (d) => d.id === selectedDepartureId || (d as any).departure_id === selectedDepartureId
+  );
+  const spotsRemaining = selectedDep
+    ? selectedDep.spots_left ?? (selectedDep as any).available_capacity ?? Math.max(0, selectedDep.capacity_limit - (selectedDep.booked_guests || 0))
+    : 0;
+  const isOverCapacity = selectedDep && spotsRemaining < totalGuests;
 
   const todayStr = new Date().toISOString().split('T')[0];
 
-  // Quick next 5 days suggestions for convenient single-click booking
+  // Quick next 6 days suggestions for convenient single-click booking
   const quickDates = Array.from({ length: 6 }).map((_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i + 1); // starting tomorrow
@@ -89,7 +94,7 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
 
         {/* Quick Date Chips */}
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-          {quickDates.map((dateStr) => {
+          {quickDates.map((dateStr, idx) => {
             const isSelected = selectedDate === dateStr;
             const dateObj = new Date(dateStr);
             const dayName = dateObj.toLocaleDateString(language === 'en' ? 'en-US' : 'bs-BA', { weekday: 'short' });
@@ -98,7 +103,7 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
 
             return (
               <button
-                key={dateStr}
+                key={`quick-date-${dateStr}-${idx}`}
                 type="button"
                 onClick={() => onChangeDate(dateStr)}
                 className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
@@ -165,10 +170,12 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5">
-            {departures.map((dep) => {
-              const isSelected = selectedDepartureId === dep.id;
-              const isFull = dep.spots_left <= 0;
-              const isLowCapacity = dep.spots_left > 0 && dep.spots_left <= 6;
+            {departures.map((dep, idx) => {
+              const depKey = dep.id || (dep as any).departure_id || `dep-slot-${dep.start_at}-${idx}`;
+              const isSelected = selectedDepartureId === dep.id || selectedDepartureId === (dep as any).departure_id;
+              const spots = dep.spots_left ?? (dep as any).available_capacity ?? Math.max(0, dep.capacity_limit - (dep.booked_guests || 0));
+              const isFull = spots <= 0;
+              const isLowCapacity = spots > 0 && spots <= 6;
               const startTime = new Date(dep.start_at).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -182,8 +189,8 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
 
               return (
                 <div
-                  key={dep.id}
-                  onClick={() => !isFull && onSelectDeparture(dep.id)}
+                  key={depKey}
+                  onClick={() => !isFull && onSelectDeparture(dep.id || (dep as any).departure_id || depKey)}
                   className={`relative p-4 rounded-2xl border transition-all ${
                     isFull
                       ? 'opacity-40 cursor-not-allowed bg-[#08120F] border-[#182C24]'
@@ -217,8 +224,8 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
                       {isFull
                         ? language === 'en' ? 'Sold Out' : 'Popunjeno'
                         : isLowCapacity
-                        ? `${dep.spots_left} ${language === 'en' ? 'seats left!' : 'mjesta!'}`
-                        : `${dep.spots_left} ${language === 'en' ? 'available' : 'slobodno'}`}
+                        ? `${spots} ${language === 'en' ? 'seats left!' : 'mjesta!'}`
+                        : `${spots} ${language === 'en' ? 'available' : 'slobodno'}`}
                     </div>
                   </div>
 
@@ -230,7 +237,7 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
                           isLowCapacity ? 'bg-amber-400' : 'bg-emerald-400'
                         }`}
                         style={{
-                          width: `${Math.min(100, Math.max(5, ((dep.capacity_limit - dep.spots_left) / dep.capacity_limit) * 100))}%`,
+                          width: `${Math.min(100, Math.max(5, ((dep.capacity_limit - spots) / dep.capacity_limit) * 100))}%`,
                         }}
                       />
                     </div>
@@ -329,8 +336,8 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
             <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
             <span>
               {language === 'en'
-                ? `Selected departure only has ${selectedDep.spots_left} seats remaining, but you requested ${totalGuests} guests. Please reduce group size or select another departure time.`
-                : `Izabrani termin ima samo ${selectedDep.spots_left} slobodnih mjesta, a unijeli ste ${totalGuests} gostiju. Smanjite broj ili izaberite drugu satnicu.`}
+                ? `Selected departure only has ${spotsRemaining} seats remaining, but you requested ${totalGuests} guests. Please reduce group size or select another departure time.`
+                : `Izabrani termin ima samo ${spotsRemaining} slobodnih mjesta, a unijeli ste ${totalGuests} gostiju. Smanjite broj ili izaberite drugu satnicu.`}
             </span>
           </div>
         )}
@@ -350,7 +357,8 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {addons.map((addon) => {
+            {addons.map((addon, idx) => {
+              const addonKey = addon.id || `addon-extra-${idx}`;
               const isSelected = selectedAddonIds.includes(addon.id);
               const name = language === 'en' ? addon.name_en : addon.name_bs;
               const desc = language === 'en' ? addon.description_en : addon.description_bs;
@@ -358,7 +366,7 @@ export const Step2DateGuests: React.FC<Step2DateGuestsProps> = ({
 
               return (
                 <div
-                  key={addon.id}
+                  key={addonKey}
                   onClick={() => onToggleAddon(addon.id)}
                   className={`cursor-pointer rounded-xl p-4 border transition-all flex items-start justify-between gap-3 ${
                     isSelected

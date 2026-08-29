@@ -91,6 +91,9 @@ export class BookingService {
       if (departure.operational_status === 'cancelled') {
         throw new Error('This departure has been cancelled due to river/weather conditions.');
       }
+      if (new Date(departure.start_at).getTime() <= Date.now() && (!input.source || input.source === BookingSource.WEBSITE)) {
+        throw new Error('This departure time has already passed and cannot be booked online.');
+      }
 
       // Check current reserved capacity
       const currentReserved = AvailabilityService.getReservedGuestCount(db, departure.id);

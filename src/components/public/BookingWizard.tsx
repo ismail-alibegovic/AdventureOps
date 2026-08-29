@@ -157,11 +157,13 @@ export const BookingWizard: React.FC<BookingWizardProps> = ({
         .getDepartures(selectedPackageId, selectedDate)
         .then((deps) => {
           setDepartures(deps);
-          const available = deps.find((d) => d.spots_left > 0);
+          const available = deps.find(
+            (d) => (d.spots_left ?? d.available_capacity ?? 0) > 0
+          );
           if (available) {
-            setSelectedDepartureId(available.id);
+            setSelectedDepartureId(available.id || available.departure_id || '');
           } else if (deps.length > 0) {
-            setSelectedDepartureId(deps[0].id);
+            setSelectedDepartureId(deps[0].id || deps[0].departure_id || '');
           } else {
             setSelectedDepartureId('');
           }
@@ -171,15 +173,20 @@ export const BookingWizard: React.FC<BookingWizardProps> = ({
   }, [selectedPackageId, selectedDate]);
 
   const selectedPkg = packages.find((p) => p.id === selectedPackageId);
-  const selectedDep = departures.find((d) => d.id === selectedDepartureId);
+  const selectedDep = departures.find(
+    (d) => d.id === selectedDepartureId || (d as any).departure_id === selectedDepartureId
+  );
   const totalGuests = adultCount + childCount;
+  const selectedDepSpots = selectedDep
+    ? selectedDep.spots_left ?? (selectedDep as any).available_capacity ?? (selectedDep.capacity_limit - (selectedDep.booked_guests || 0))
+    : 0;
 
   // Validation
   const canProceedStep1 = !!selectedPackageId;
   const canProceedStep2 =
     !!selectedDate &&
     !!selectedDepartureId &&
-    (!selectedDep || selectedDep.spots_left >= totalGuests) &&
+    (!selectedDep || selectedDepSpots >= totalGuests) &&
     adultCount >= 1 &&
     totalGuests > 0;
   const canProceedStep3 =

@@ -2,10 +2,21 @@ import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { apiRouter } from './server/routes/api';
+import { getDatabase, ensureDemoFutureDepartures, saveDatabase } from './server/db/database';
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Initialize DB and ensure rolling 30-day demo departure availability
+  const db = getDatabase();
+  const addedDepartures = ensureDemoFutureDepartures(db);
+  if (addedDepartures > 0) {
+    saveDatabase(db);
+    console.log(`[Demo Seed Maintenance] Added ${addedDepartures} rolling future departures across next 30 days.`);
+  } else {
+    console.log(`[Demo Seed Maintenance] 30-day rolling departure window is verified and up-to-date.`);
+  }
 
   app.use(express.json());
 

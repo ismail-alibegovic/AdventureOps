@@ -4,7 +4,7 @@ import { AllocationService } from '../services/allocation.service';
 import { PaymentService } from '../services/payment.service';
 import { CancellationService } from '../services/cancellation.service';
 import { DepartureService } from '../services/departure.service';
-import { DEFAULT_ORG_ID, getDatabase } from '../db/database';
+import { DEFAULT_ORG_ID, getDatabase, ensureDemoFutureDepartures } from '../db/database';
 import { BookingSource, PaymentMethod, CancellationReason, BookingStatus, DepartureStatus } from '../../src/types';
 
 export interface TestResultItem {
@@ -342,6 +342,143 @@ export async function runAllTests(): Promise<{ summary: { total: number; passed:
 
     if (p2Result.balance_due !== 0) {
       throw new Error(`Expected balance due 0, got ${p2Result.balance_due}`);
+    }
+  });
+
+  // -------------------------------------------------------------
+  // 7. ROLLING 30-DAY DEMO DEPARTURES & IDEMPOTENCY
+  // -------------------------------------------------------------
+  await runTest('Maintains rolling 30-day future departures idempotently without duplicates', 'DemoLifecycle', async () => {
+    const db = getDatabase();
+    
+    // First ensure run
+    const initialRunAdded = ensureDemoFutureDepartures(db);
+    const totalDepsCount = db.departures.length;
+
+    // Second ensure run must add exactly 0 new records (idempotency check)
+    const secondRunAdded = ensureDemoFutureDepartures(db);
+    if (secondRunAdded !== 0) {
+      throw new Error(`Idempotency failure: second run created ${secondRunAdded} duplicate departures`);
+    }
+    if (db.departures.length !== totalDepsCount) {
+      throw new Error(`Idempotency failure: departures count changed from ${totalDepsCount} to ${db.departures.length}`);
+    }
+
+    // Verify all active packages have future departures for the 30-day window
+    const activePackages = db.packages.filter((p) => p.active);
+    const now = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 25);
+    const targetDateStr = futureDate.toISOString().split('T')[0];
+
+    for (const pkg of activePackages) {
+      const publicDeps = AvailabilityService.getPublicDepartures(orgId, pkg.id, targetDateStr);
+      if (publicDeps.length === 0) {
+        throw new Error(`Package ${pkg.name_en} (${pkg.id}) has no bookable departures on future date ${targetDateStr}`);
+      }
+      for (const d of publicDeps) {
+        if (d.status !== DepartureStatus.OPEN && d.status !== DepartureStatus.FULL) {
+          throw new Error(`Generated departure ${d.departure_id} has invalid status ${d.status}`);
+        }
+        if (d.capacity_limit <= 0) {
+          throw new Error(`Generated departure ${d.departure_id} has invalid capacity ${d.capacity_limit}`);
+        }
+      }
+    }
+  });
+
+  // -------------------------------------------------------------
+  // 8. CAPACITY CALCULATION PRESERVATION
+  // -------------------------------------------------------------
+  await runTest('Preserves real capacity calculations without resetting existing bookings', 'Capacity', async () => {
+    const db = getDatabase();
+    const activePkg = db.packages[0];
+
+    // Find a future departure 5 days ahead
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 5);
+    const dateStr = futureDate.toISOString().split('T')[0];
+
+    const deps = AvailabilityService.getPublicDepartures(orgId, activePkg.id, dateStr);
+    if (deps.length === 0) throw new Error('No departures found for test date');
+
+    const targetDep = deps[0];
+    const initialAvailable = targetDep.available_capacity;
+
+    if (initialAvailable < 4) {
+      throw new Error('Test departure has insufficient initial capacity for test');
+    }
+
+    // Book 4 guests
+    const b = await BookingService.createBooking({
+      organization_id: orgId,
+      package_id: activePkg.id,
+      departure_id: targetDep.departure_id,
+      adult_count: 4,
+      child_count: 0,
+      first_name: 'Capacity',
+      last_name: 'Check',
+      email: 'cap.check@example.com',
+      phone: '+38761000888',
+      country_code: 'BA',
+      preferred_language: 'bs',
+      terms_version: 'v1.0-2026',
+    });
+
+    const updatedAvail = AvailabilityService.getDepartureAvailability(
+      getDatabase(),
+      getDatabase().departures.find((d) => d.id === targetDep.departure_id)!
+    );
+
+    if (updatedAvail.available_capacity !== initialAvailable - 4) {
+      throw new Error(
+        `Expected remaining capacity ${initialAvailable - 4}, but got ${updatedAvail.available_capacity}`
+      );
+    }
+  });
+
+  // -------------------------------------------------------------
+  // 9. PAST DEPARTURE ONLINE BOOKING REJECTION
+  // -------------------------------------------------------------
+  await runTest('Rejects public website bookings for passed departure times', 'Validation', async () => {
+    const db = getDatabase();
+    
+    // Create a past departure
+    const pastStart = new Date(Date.now() - 3600000); // 1 hour ago
+    const pastDep = await DepartureService.createDeparture({
+      organization_id: orgId,
+      package_id: db.packages[0].id,
+      start_at: pastStart.toISOString(),
+      meeting_at: new Date(pastStart.getTime() - 45 * 60000).toISOString(),
+      expected_end_at: new Date(pastStart.getTime() + 360 * 60000).toISOString(),
+      capacity_limit: 20,
+    });
+
+    let rejectedAsExpected = false;
+    try {
+      await BookingService.createBooking({
+        organization_id: orgId,
+        package_id: pastDep.package_id,
+        departure_id: pastDep.id,
+        source: BookingSource.WEBSITE,
+        adult_count: 2,
+        child_count: 0,
+        first_name: 'Late',
+        last_name: 'Customer',
+        email: 'late@example.com',
+        phone: '+38761000999',
+        country_code: 'BA',
+        preferred_language: 'en',
+        terms_version: 'v1.0-2026',
+      });
+    } catch (err: any) {
+      if (err.message.includes('passed')) {
+        rejectedAsExpected = true;
+      }
+    }
+
+    if (!rejectedAsExpected) {
+      throw new Error('Public website booking for past departure was not rejected');
     }
   });
 
