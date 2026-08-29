@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../../locales/i18n';
 import { FAQItem } from '../../types';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { SectionHeader } from '../ui/SectionHeader';
 
 interface FaqSectionProps {
   faqs?: FAQItem[];
@@ -22,49 +24,76 @@ export const FaqSection: React.FC<FaqSectionProps> = ({ faqs = [] }) => {
   };
 
   return (
-    <section id="faq" className="py-20 bg-slate-950 text-slate-100 border-t border-slate-900">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 space-y-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">
-            Odgovori na Vaša Pitanja
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            {t('faq_title')}
-          </h2>
-          <p className="text-slate-400 text-base">
-            {t('faq_subtitle')}
-          </p>
-        </div>
+    <section id="faq" className="py-24 bg-[#07110F] text-slate-100 border-t border-[#162622]">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <SectionHeader
+            eyebrow={language === 'en' ? 'Frequently Asked Questions' : 'Često Postavljana Pitanja'}
+            title={t('faq_title')}
+            description={t('faq_subtitle')}
+            align="center"
+          />
+        </motion.div>
 
-        <div className="space-y-3">
-          {faqs.map((faq) => {
+        <div className="space-y-3.5 mt-10">
+          {faqs.map((faq, idx) => {
             const isOpen = openId === faq.id;
             const q = language === 'en' ? faq.question_en : faq.question_bs;
             const a = language === 'en' ? faq.answer_en : faq.answer_bs;
 
             return (
-              <div
+              <motion.div
                 key={faq.id}
-                className="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden transition-colors hover:border-slate-700"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-30px' }}
+                transition={{ duration: 0.35, delay: idx * 0.05 }}
+                className={`rounded-2xl bg-[#0E1A17] border transition-all duration-200 overflow-hidden shadow-sm ${
+                  isOpen
+                    ? 'border-emerald-500/60 shadow-lg shadow-emerald-950/20'
+                    : 'border-[#1F332C] hover:border-[#2C473E]'
+                }`}
               >
                 <button
                   onClick={() => toggle(faq.id)}
-                  className="w-full flex items-center justify-between p-5 text-left text-base font-bold text-white cursor-pointer"
+                  className="w-full flex items-center justify-between p-5 text-left text-sm sm:text-base font-bold text-white cursor-pointer focus:outline-none select-none"
+                  aria-expanded={isOpen}
                 >
-                  <span className="pr-4">{q}</span>
-                  <ChevronDown
-                    className={`w-5 h-5 text-emerald-400 shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180' : ''
+                  <div className="flex items-center gap-3 pr-4">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                    <span className="leading-snug font-display">{q}</span>
+                  </div>
+                  <div
+                    className={`w-8 h-8 rounded-lg bg-[#13211D] border border-[#1F332C] flex items-center justify-center text-emerald-400 shrink-0 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180 bg-emerald-950/80 border-emerald-500/40' : ''
                     }`}
-                  />
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
                 </button>
 
-                {isOpen && (
-                  <div className="px-5 pb-5 pt-1 text-sm text-slate-300 border-t border-slate-800/60 leading-relaxed">
-                    {a}
-                  </div>
-                )}
-              </div>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-300 border-t border-[#1F332C]/60 leading-relaxed">
+                        <p className="pl-4.5">{a}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
         </div>

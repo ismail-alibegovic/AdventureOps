@@ -3,7 +3,8 @@ import { apiClient } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import { Package, Departure, BookingSource, PaymentMethod, BookingStatus } from '../../types';
-import { X, Plus, Users, Calendar, Clock, DollarSign, Shield, Phone } from 'lucide-react';
+import { X } from 'lucide-react';
+import { Button } from '../ui/Button';
 
 interface ManualBookingModalProps {
   onClose: () => void;
@@ -67,7 +68,7 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDepId || !firstName || !lastName || !phone) {
-      toast.error('Molimo popunite sva obavezna polja');
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -90,7 +91,7 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
                 amount: Number(initialPaymentAmount),
                 method: paymentMethod,
                 reference: 'Manual Entry',
-                notes: 'Uplaćeno pri kreiranju rezervacije',
+                notes: 'Paid during booking creation',
               }
             : undefined,
         internal_note: internalNote || undefined,
@@ -98,29 +99,29 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
         user_name: currentUser ? `${currentUser.first_name} ${currentUser.last_name}` : undefined,
       });
 
-      toast.success(`Rezervacija ${res.reservation_code} uspješno kreirana!`);
+      toast.success(`Booking ${res.reservation_code} successfully created!`);
       onSuccess(res);
       onClose();
     } catch (err: any) {
-      toast.error(err.message || 'Neuspjelo kreiranje rezervacije');
+      toast.error(err.message || 'Failed to create booking');
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 my-8">
-        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#07110F]/80 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[#0E1A17] border border-[#1F332C] rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 my-8">
+        <div className="flex justify-between items-center border-b border-[#1F332C] pb-4">
           <div>
-            <h3 className="text-lg font-bold text-white">Unos Ručne Rezervacije (Staff)</h3>
-            <p className="text-xs text-slate-400">
-              Kreiranje rezervacije za goste koji zovu telefonom, šalju WhatsApp ili dolaze direktno na bazu.
+            <h3 className="text-lg font-bold text-white font-display">New Manual Booking (Staff)</h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Create a reservation for guests calling via phone, sending WhatsApp or walking in directly at the base.
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-[#13211D] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -135,30 +136,30 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
             {/* Row 1: Source & Package */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Izvor Rezervacije *</label>
+                <label className="block text-slate-300 font-semibold mb-1">Booking Source *</label>
                 <select
                   value={source}
                   onChange={(e) => setSource(e.target.value as BookingSource)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 >
-                  <option value={BookingSource.PHONE}>Telefonski Poziv</option>
-                  <option value={BookingSource.WHATSAPP}>WhatsApp Poruka</option>
-                  <option value={BookingSource.WALK_IN}>Walk-in (Direktno na bazi)</option>
-                  <option value={BookingSource.TOUR_AGENCY}>Turistička Agencija / Partner</option>
-                  <option value={BookingSource.OTHER}>Ostalo (Direktno/Email)</option>
+                  <option value={BookingSource.PHONE}>Phone Call</option>
+                  <option value={BookingSource.WHATSAPP}>WhatsApp Message</option>
+                  <option value={BookingSource.WALK_IN}>Walk-in (Direct at Base)</option>
+                  <option value={BookingSource.TOUR_AGENCY}>Tour Agency / Partner</option>
+                  <option value={BookingSource.OTHER}>Other / Email</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Izaberite Paket *</label>
+                <label className="block text-slate-300 font-semibold mb-1">Select Package *</label>
                 <select
                   value={selectedPkgId}
                   onChange={(e) => setSelectedPkgId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 >
                   {packages.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name_bs} ({p.base_price_adult} BAM/os)
+                      {p.name_en || p.name_bs} ({p.base_price_adult} BAM/person)
                     </option>
                   ))}
                 </select>
@@ -167,11 +168,11 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
 
             {/* Row 2: Departure Selection */}
             <div>
-              <label className="block text-slate-300 font-semibold mb-1">Termin Polaska *</label>
+              <label className="block text-slate-300 font-semibold mb-1">Departure Schedule *</label>
               <select
                 value={selectedDepId}
                 onChange={(e) => setSelectedDepId(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-medium"
+                className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-medium focus:outline-none"
               >
                 {departures.map((d) => {
                   const startTime = new Date(d.start_at).toLocaleString([], {
@@ -182,7 +183,7 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
                   });
                   return (
                     <option key={d.id} value={d.id}>
-                      {startTime} ({d.package?.name_bs}) - Slobodno mjesta: {d.spots_left}
+                      {startTime} ({d.package?.name_en || d.package?.name_bs}) - Available Seats: {d.spots_left}
                     </option>
                   );
                 })}
@@ -192,7 +193,7 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
             {/* Row 3: Guest Counts */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Broj Odraslih *</label>
+                <label className="block text-slate-300 font-semibold mb-1">Adults *</label>
                 <input
                   type="number"
                   min={1}
@@ -200,19 +201,19 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
                   required
                   value={adultCount}
                   onChange={(e) => setAdultCount(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-sm"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-bold text-sm focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Broj Djece (do 14 god)</label>
+                <label className="block text-slate-300 font-semibold mb-1">Children (under 14)</label>
                 <input
                   type="number"
                   min={0}
                   max={30}
                   value={childCount}
                   onChange={(e) => setChildCount(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-sm"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-bold text-sm focus:outline-none"
                 />
               </div>
             </div>
@@ -220,83 +221,83 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
             {/* Row 4: Guest Contact Details */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Ime Nosioca Grupe *</label>
+                <label className="block text-slate-300 font-semibold mb-1">First Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="npr. Emir"
+                  placeholder="e.g. Liam"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Prezime *</label>
+                <label className="block text-slate-300 font-semibold mb-1">Last Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="npr. Hadžić"
+                  placeholder="e.g. Miller"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Broj Telefona *</label>
+                <label className="block text-slate-300 font-semibold mb-1">Phone Number *</label>
                 <input
                   type="tel"
                   required
                   placeholder="+387 61 000 000"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Email Adresa (opcionalno)</label>
+                <label className="block text-slate-300 font-semibold mb-1">Email Address (Optional)</label>
                 <input
                   type="email"
-                  placeholder="gost@example.com"
+                  placeholder="guest@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
             </div>
 
             {/* Row 5: Initial Payment on Entry */}
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+            <div className="p-4 rounded-xl bg-[#081210] border border-[#1F332C] space-y-3">
               <div className="flex justify-between items-center">
-                <span className="font-bold text-slate-300">Ukupan obračunski iznos:</span>
-                <span className="font-extrabold text-white text-base">{calculatedTotal} BAM</span>
+                <span className="font-bold text-slate-300">Total Calculated Amount:</span>
+                <span className="font-extrabold text-white text-base font-display">{calculatedTotal} BAM</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-850">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#1F332C]">
                 <div>
-                  <label className="block text-slate-400 mb-1">Trenutno Uplaćeno (BAM):</label>
+                  <label className="block text-slate-400 mb-1">Payment Received Now (BAM):</label>
                   <input
                     type="number"
                     min={0}
                     max={calculatedTotal}
                     value={initialPaymentAmount}
                     onChange={(e) => setInitialPaymentAmount(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold"
+                    className="w-full bg-[#0E1A17] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-bold focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">Način Plaćanja:</label>
+                  <label className="block text-slate-400 mb-1">Payment Method:</label>
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                    className="w-full bg-[#0E1A17] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                   >
-                    <option value={PaymentMethod.CASH}>Gotovina</option>
-                    <option value={PaymentMethod.CARD_TERMINAL}>Kartica (POS)</option>
-                    <option value={PaymentMethod.BANK_TRANSFER}>Bankovni Prenos</option>
+                    <option value={PaymentMethod.CASH}>Cash (Base Džajići)</option>
+                    <option value={PaymentMethod.CARD_TERMINAL}>Card (POS)</option>
+                    <option value={PaymentMethod.BANK_TRANSFER}>Bank Transfer</option>
                   </select>
                 </div>
               </div>
@@ -304,32 +305,34 @@ export const ManualBookingModal: React.FC<ManualBookingModalProps> = ({
 
             {/* Row 6: Internal Note */}
             <div>
-              <label className="block text-slate-300 font-semibold mb-1">Interna Dispečerska Napomena</label>
+              <label className="block text-slate-300 font-semibold mb-1">Internal Staff Note</label>
               <input
                 type="text"
-                placeholder="npr. Tražili vegetarijanski meni, dolaze kombijem iz Sarajeva"
+                placeholder="e.g. Vegetarian meal requested, arriving by private minibus"
                 value={internalNote}
                 onChange={(e) => setInternalNote(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
               />
             </div>
 
             {/* Submit Bar */}
-            <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
-              <button
+            <div className="flex justify-end gap-3 pt-3 border-t border-[#1F332C]">
+              <Button
                 type="button"
+                variant="ghost"
+                size="md"
                 onClick={onClose}
-                className="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold cursor-pointer"
               >
-                Odustani
-              </button>
-              <button
+                Cancel
+              </Button>
+              <Button
                 type="submit"
+                variant="primary"
+                size="md"
                 disabled={submitting}
-                className="px-6 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold shadow-md transition-all cursor-pointer disabled:opacity-40"
               >
-                {submitting ? 'Kreiram...' : 'Kreiraj Rezervaciju'}
-              </button>
+                {submitting ? 'Creating...' : 'Create Booking'}
+              </Button>
             </div>
           </form>
         )}

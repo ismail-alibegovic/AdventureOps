@@ -3,7 +3,9 @@ import { apiClient } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import { Boat, BoatStatus, StaffMember, UserRole } from '../../types';
-import { Ship, Users, Plus, CheckCircle2, AlertCircle, Phone, Mail, Shield, Trash2, Edit, X } from 'lucide-react';
+import { Ship, Users, Plus, Phone, Mail, X } from 'lucide-react';
+import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
 
 export const BoatsStaffView: React.FC = () => {
   const toast = useToast();
@@ -58,13 +60,13 @@ export const BoatsStaffView: React.FC = () => {
         capacity: Number(boatCap),
         status: BoatStatus.AVAILABLE,
       });
-      toast.success(`Čamac "${boatName}" uspješno dodat u flotu`);
+      toast.success(`Raft "${boatName}" added to fleet`);
       setShowBoatModal(false);
       setBoatName('');
       setBoatCode('');
       loadData();
     } catch (err: any) {
-      toast.error(err.message || 'Neuspjelo dodavanje čamca');
+      toast.error(err.message || 'Failed to add raft');
     }
   };
 
@@ -80,7 +82,7 @@ export const BoatsStaffView: React.FC = () => {
         notes: staffNotes,
         active: true,
       });
-      toast.success(`Skiper/Član osoblja ${staffFirst} ${staffLast} uspješno dodat`);
+      toast.success(`Staff member ${staffFirst} ${staffLast} added`);
       setShowStaffModal(false);
       setStaffFirst('');
       setStaffLast('');
@@ -88,23 +90,23 @@ export const BoatsStaffView: React.FC = () => {
       setStaffPhone('');
       loadData();
     } catch (err: any) {
-      toast.error(err.message || 'Neuspjelo dodavanje');
+      toast.error(err.message || 'Failed to add staff member');
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Header & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6">
+      <Card variant="elevated" padding="lg" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-1">
-            Resursi & Osoblje
+            Resources & Crew
           </span>
-          <h2 className="text-2xl font-bold text-white">Flota Čamaca & Rafting Skiperi</h2>
+          <h2 className="text-2xl font-bold text-white font-display">Fleet & River Guides</h2>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="bg-slate-950 p-1 rounded-2xl border border-slate-800 flex">
+          <div className="bg-[#081210] p-1 rounded-2xl border border-[#1F332C] flex">
             <button
               onClick={() => setActiveTab('boats')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
@@ -113,7 +115,7 @@ export const BoatsStaffView: React.FC = () => {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Flota Čamaca ({boats.length})
+              Boat Fleet ({boats.length})
             </button>
             <button
               onClick={() => setActiveTab('staff')}
@@ -123,21 +125,22 @@ export const BoatsStaffView: React.FC = () => {
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Skiperi & Tim ({staff.length})
+              Guides & Staff ({staff.length})
             </button>
           </div>
 
           {isAdminOrAbove && (
-            <button
+            <Button
+              variant="primary"
+              size="md"
               onClick={() => (activeTab === 'boats' ? setShowBoatModal(true) : setShowStaffModal(true))}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 text-xs font-extrabold shadow-md transition-all cursor-pointer"
+              leftIcon={<Plus className="w-4 h-4 text-slate-950" />}
             >
-              <Plus className="w-4 h-4" />
-              <span>{activeTab === 'boats' ? 'Dodaj Čamac' : 'Dodaj Skipera'}</span>
-            </button>
+              {activeTab === 'boats' ? 'Add Raft' : 'Add Guide'}
+            </Button>
           )}
         </div>
-      </div>
+      </Card>
 
       {loading ? (
         <div className="py-20 flex justify-center text-emerald-400">
@@ -147,50 +150,54 @@ export const BoatsStaffView: React.FC = () => {
         /* Boats Grid */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {boats.map((b) => (
-            <div
+            <Card
               key={b.id}
-              className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 shadow-sm hover:border-slate-700 transition-colors"
+              variant="elevated"
+              padding="lg"
+              className="space-y-4 hover:border-[#2A443B] transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-emerald-400">
+                  <div className="w-10 h-10 rounded-xl bg-[#081210] border border-[#1F332C] flex items-center justify-center text-emerald-400">
                     <Ship className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white text-base">{b.name}</h4>
-                    <span className="text-xs text-slate-400">Kod: {b.code}</span>
+                    <h4 className="font-bold text-white text-base font-display">{b.name}</h4>
+                    <span className="text-xs text-slate-400">Code: {b.code}</span>
                   </div>
                 </div>
 
                 <span
                   className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border ${
                     b.status === BoatStatus.AVAILABLE
-                      ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                      : 'bg-rose-950 text-rose-300 border-rose-800'
+                      ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/80'
+                      : 'bg-rose-950/60 text-rose-300 border-rose-800/80'
                   }`}
                 >
-                  {b.status === BoatStatus.AVAILABLE ? 'Aktivno' : 'Servis'}
+                  {b.status === BoatStatus.AVAILABLE ? 'Active' : 'Maintenance'}
                 </span>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-850 text-xs flex justify-between">
-                <span className="text-slate-400">Maksimalni Kapacitet:</span>
-                <strong className="text-white">{b.capacity} osoba</strong>
+              <div className="p-3 rounded-xl bg-[#081210] border border-[#1F332C] text-xs flex justify-between">
+                <span className="text-slate-400">Max Capacity:</span>
+                <strong className="text-white font-display">{b.capacity} seats</strong>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       ) : (
         /* Staff Grid */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {staff.map((s) => (
-            <div
+            <Card
               key={s.id}
-              className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3 shadow-sm hover:border-slate-700 transition-colors"
+              variant="elevated"
+              padding="lg"
+              className="space-y-4 hover:border-[#2A443B] transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <h4 className="font-bold text-white text-base">
+                  <h4 className="font-bold text-white text-base font-display">
                     {s.first_name} {s.last_name}
                   </h4>
                   <span className="text-xs text-emerald-400 uppercase font-semibold">
@@ -198,12 +205,12 @@ export const BoatsStaffView: React.FC = () => {
                   </span>
                 </div>
 
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                  {s.notes || 'IRF Skiper'}
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#081210] border border-[#1F332C] text-slate-300">
+                  {s.notes || 'IRF Guide'}
                 </span>
               </div>
 
-              <div className="space-y-1.5 text-xs text-slate-400 pt-2 border-t border-slate-850">
+              <div className="space-y-1.5 text-xs text-slate-400 pt-2 border-t border-[#1F332C]">
                 <div className="flex items-center gap-2">
                   <Phone className="w-3.5 h-3.5 text-slate-500" />
                   <span className="text-slate-300">{s.phone}</span>
@@ -213,48 +220,48 @@ export const BoatsStaffView: React.FC = () => {
                   <span className="text-slate-300">{s.email}</span>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
 
       {/* Modal: New Boat */}
       {showBoatModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-white text-base">Dodaj Novi Čamac u Flotu</h3>
-              <button onClick={() => setShowBoatModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#07110F]/80 backdrop-blur-sm">
+          <div className="bg-[#0E1A17] border border-[#1F332C] rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-[#1F332C] pb-3">
+              <h3 className="font-bold text-white text-base font-display">Add Raft to Fleet</h3>
+              <button onClick={() => setShowBoatModal(false)} className="text-slate-400 hover:text-white cursor-pointer">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleCreateBoat} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Naziv Čamca *</label>
+                <label className="block text-slate-300 font-semibold mb-1">Raft Name *</label>
                 <input
                   type="text"
                   required
-                  placeholder="npr. Neretva 07"
+                  placeholder="e.g. Neretva Pulsar 07"
                   value={boatName}
                   onChange={(e) => setBoatName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Oznaka / Kod</label>
+                <label className="block text-slate-300 font-semibold mb-1">Fleet Code</label>
                 <input
                   type="text"
-                  placeholder="npr. B-07"
+                  placeholder="e.g. B-07"
                   value={boatCode}
                   onChange={(e) => setBoatCode(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Kapacitet (broj osoba) *</label>
+                <label className="block text-slate-300 font-semibold mb-1">Passenger Capacity *</label>
                 <input
                   type="number"
                   min={4}
@@ -262,24 +269,26 @@ export const BoatsStaffView: React.FC = () => {
                   required
                   value={boatCap}
                   onChange={(e) => setBoatCap(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-bold focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
-                <button
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#1F332C]">
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setShowBoatModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300"
                 >
-                  Odustani
-                </button>
-                <button
+                  Cancel
+                </Button>
+                <Button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold"
+                  variant="primary"
+                  size="sm"
                 >
-                  Sačuvaj Čamac
-                </button>
+                  Save Raft
+                </Button>
               </div>
             </form>
           </div>
@@ -288,11 +297,11 @@ export const BoatsStaffView: React.FC = () => {
 
       {/* Modal: New Staff */}
       {showStaffModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-white text-base">Dodaj Novog Skipera / Člana Tima</h3>
-              <button onClick={() => setShowStaffModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#07110F]/80 backdrop-blur-sm">
+          <div className="bg-[#0E1A17] border border-[#1F332C] rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-[#1F332C] pb-3">
+              <h3 className="font-bold text-white text-base font-display">Add Guide / Crew Member</h3>
+              <button onClick={() => setShowStaffModal(false)} className="text-slate-400 hover:text-white cursor-pointer">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -300,23 +309,23 @@ export const BoatsStaffView: React.FC = () => {
             <form onSubmit={handleCreateStaff} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Ime *</label>
+                  <label className="block text-slate-300 font-semibold mb-1">First Name *</label>
                   <input
                     type="text"
                     required
                     value={staffFirst}
                     onChange={(e) => setStaffFirst(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                    className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Prezime *</label>
+                  <label className="block text-slate-300 font-semibold mb-1">Last Name *</label>
                   <input
                     type="text"
                     required
                     value={staffLast}
                     onChange={(e) => setStaffLast(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                    className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                   />
                 </div>
               </div>
@@ -328,59 +337,61 @@ export const BoatsStaffView: React.FC = () => {
                   required
                   value={staffEmail}
                   onChange={(e) => setStaffEmail(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Telefon *</label>
+                <label className="block text-slate-300 font-semibold mb-1">Phone *</label>
                 <input
                   type="tel"
                   required
                   placeholder="+387 61..."
                   value={staffPhone}
                   onChange={(e) => setStaffPhone(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Uloga *</label>
+                <label className="block text-slate-300 font-semibold mb-1">Role *</label>
                 <select
                   value={staffRole}
                   onChange={(e) => setStaffRole(e.target.value as UserRole)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-semibold"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-semibold focus:outline-none"
                 >
-                  <option value={UserRole.GUIDE}>Skiper (Guide)</option>
-                  <option value={UserRole.DISPATCHER}>Dispečer (Dispatcher)</option>
-                  <option value={UserRole.ADMIN}>Administrator (Admin)</option>
+                  <option value={UserRole.GUIDE}>River Guide (Skipper)</option>
+                  <option value={UserRole.DISPATCHER}>Dispatcher / Ops Lead</option>
+                  <option value={UserRole.ADMIN}>Administrator</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Bilješke / Sertifikat</label>
+                <label className="block text-slate-300 font-semibold mb-1">Certification & Notes</label>
                 <input
                   type="text"
                   value={staffNotes}
                   onChange={(e) => setStaffNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-[#081210] border border-[#1F332C] focus:border-emerald-500 rounded-xl px-3 py-2 text-white focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
-                <button
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#1F332C]">
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setShowStaffModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300"
                 >
-                  Odustani
-                </button>
-                <button
+                  Cancel
+                </Button>
+                <Button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold"
+                  variant="primary"
+                  size="sm"
                 >
-                  Sačuvaj
-                </button>
+                  Save Member
+                </Button>
               </div>
             </form>
           </div>

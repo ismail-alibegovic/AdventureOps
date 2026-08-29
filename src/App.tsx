@@ -46,7 +46,40 @@ export default function App() {
   const toast = useToast();
 
   // Mode: 'public' or 'admin'
-  const [appMode, setAppMode] = useState<'public' | 'admin'>('public');
+  const [appMode, setAppMode] = useState<'public' | 'admin'>(() => {
+    if (typeof window !== 'undefined') {
+      if (window.location.hash === '#admin' || window.location.pathname.startsWith('/admin')) {
+        return 'admin';
+      }
+    }
+    return 'public';
+  });
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#admin') {
+        setAppMode('admin');
+      } else if (appMode === 'admin' && window.location.hash === '') {
+        setAppMode('public');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [appMode]);
+
+  const handleEnterAdmin = () => {
+    window.location.hash = 'admin';
+    setAppMode('admin');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleExitAdmin = () => {
+    if (window.location.hash === '#admin') {
+      window.history.pushState('', document.title, window.location.pathname);
+    }
+    setAppMode('public');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Public View State: 'home' | 'book' | 'lookup' | 'safety' | 'canyon' | 'directions' | 'contact'
   const [publicView, setPublicView] = useState<string>('home');
@@ -115,7 +148,7 @@ export default function App() {
       <AdminLayout
         currentTab={adminTab}
         onSelectTab={setAdminTab}
-        onExitAdmin={() => setAppMode('public')}
+        onExitAdmin={handleExitAdmin}
         onOpenManualBooking={() => setManualBookingOpen(true)}
       >
         {adminTab === 'dashboard' && (
@@ -125,6 +158,7 @@ export default function App() {
             onOpenBookings={() => setAdminTab('bookings')}
             onOpenDailyBoard={() => setAdminTab('daily-board')}
             onOpenManualBooking={() => setManualBookingOpen(true)}
+            onOpenBoatPlanner={() => setAdminTab('boat-planner')}
           />
         )}
 
@@ -195,10 +229,11 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-slate-950">
       <Navbar
+        currentView={publicView}
         onOpenBooking={() => handleOpenBooking()}
         onOpenLookup={() => handleOpenLookup()}
         onNavigateSection={handleNavigateSection}
-        onEnterAdmin={() => setAppMode('admin')}
+        onEnterAdmin={handleEnterAdmin}
       />
 
       <main className="flex-1">
@@ -264,7 +299,7 @@ export default function App() {
         onNavigateSection={handleNavigateSection}
         onOpenBooking={() => handleOpenBooking()}
         onOpenLookup={() => handleOpenLookup()}
-        onEnterAdmin={() => setAppMode('admin')}
+        onEnterAdmin={handleEnterAdmin}
       />
     </div>
   );

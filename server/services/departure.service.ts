@@ -46,6 +46,25 @@ export class DepartureService {
       // Boat assignments
       const assignments = db.boat_assignments.filter((ba) => ba.departure_id === dep.id);
       const assignedGuides = assignments.filter((ba) => !!ba.guide_id);
+      const enrichedAssignments = assignments.map((ba) => {
+        const boat = db.boats.find((b) => b.id === ba.boat_id);
+        const guide = db.staff_members.find((s) => s.id === ba.guide_id);
+        const allocs = db.booking_allocations.filter((al) => al.boat_assignment_id === ba.id);
+        const allocCount = allocs.reduce((s, a) => s + a.guest_count, 0);
+        return {
+          ...ba,
+          boat,
+          guide,
+          allocated_guests_count: allocCount,
+          allocations: allocs.map((al) => {
+            const b = db.bookings.find((bk) => bk.id === al.booking_id);
+            return {
+              ...al,
+              booking: b,
+            };
+          }),
+        };
+      });
 
       return {
         ...dep,
@@ -57,6 +76,8 @@ export class DepartureService {
         assigned_guides_count: assignedGuides.length,
         checked_in_guests: checkedInGuests,
         unpaid_guests: unpaidGuests,
+        boat_assignments: enrichedAssignments,
+        bookings: activeBookings,
       };
     });
   }

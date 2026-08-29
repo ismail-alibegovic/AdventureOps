@@ -14,15 +14,16 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Determine initial language from path or default to 'bs'
+  // Determine initial language from path or default to 'en'
   const [language, setLanguageState] = useState<SupportedLanguage>(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
+      if (path.startsWith('/bs')) return 'bs';
       if (path.startsWith('/en')) return 'en';
       const saved = localStorage.getItem('rafting_lang');
       if (saved === 'en' || saved === 'bs') return saved;
     }
-    return 'bs';
+    return 'en';
   });
 
   const setLanguage = (lang: SupportedLanguage) => {
