@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { StatusBadge } from '../ui/StatusBadge';
+import { PageLoader } from '../ui/loading';
 
 interface BoatPlannerViewProps {
   onSelectDeparture?: (depId: string) => void;
@@ -414,9 +415,11 @@ export const BoatPlannerView: React.FC<BoatPlannerViewProps> = ({ onSelectDepart
       {/* 3. MAIN WORKSPACE (LEFT 35% UNALLOCATED, RIGHT 65% BOATS) */}
       {/* ------------------------------------------------------------- */}
       {loadingList ? (
-        <div className="py-20 flex justify-center text-emerald-400">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-400 border-t-transparent" />
-        </div>
+        <PageLoader
+          message="Loading fleet departures & boat manifests"
+          subtext="Checking available rafts and scheduled runs"
+          size="md"
+        />
       ) : board.length === 0 ? (
         /* Empty departures state */
         <div className="rounded-2xl bg-[#0A1714] border border-[#192F26] p-12 text-center space-y-4">
@@ -433,9 +436,11 @@ export const BoatPlannerView: React.FC<BoatPlannerViewProps> = ({ onSelectDepart
           </div>
         </div>
       ) : loadingDetail ? (
-        <div className="py-20 flex justify-center text-emerald-400">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-400 border-t-transparent" />
-        </div>
+        <PageLoader
+          message="Syncing boat seat allocations"
+          subtext="Assigning guides and organizing group seating"
+          size="sm"
+        />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* ========================================================= */}

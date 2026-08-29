@@ -4,6 +4,7 @@ import { useToast } from '../../context/ToastContext';
 import { Save, Globe, MapPin } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { PageLoader } from '../ui/loading';
 
 export const CmsContentEditor: React.FC = () => {
   const toast = useToast();
@@ -41,9 +42,11 @@ export const CmsContentEditor: React.FC = () => {
 
   if (loading || !settings) {
     return (
-      <div className="py-20 flex justify-center text-emerald-400">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-400 border-t-transparent" />
-      </div>
+      <PageLoader
+        message="Loading CMS content & site configuration"
+        subtext="Fetching pricing tables, hero settings, and contact information"
+        size="md"
+      />
     );
   }
 

@@ -19,6 +19,7 @@ import {
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { MetricCard } from '../ui/MetricCard';
+import { PageLoader, MetricCardSkeleton } from '../ui/loading';
 
 export const ReportsView: React.FC = () => {
   const toast = useToast();
@@ -56,9 +57,15 @@ export const ReportsView: React.FC = () => {
 
   if (loading || !data) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center gap-3 text-slate-400">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-400 border-t-transparent" />
-        <span className="text-xs">Generating analytical reports...</span>
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <MetricCardSkeleton count={4} />
+        </div>
+        <PageLoader
+          message="Generating analytical reports & financial summaries"
+          subtext="Calculating revenue yields, guest distributions, and occupancy trends"
+          size="md"
+        />
       </div>
     );
   }

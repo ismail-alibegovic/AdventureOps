@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { TableSkeleton } from '../ui/loading';
 
 export const CustomersView: React.FC = () => {
   const toast = useToast();
@@ -90,10 +91,7 @@ export const CustomersView: React.FC = () => {
 
       {/* Customer Directory */}
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center gap-3 text-slate-400">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-400 border-t-transparent" />
-          <span className="text-xs">Loading customer directory...</span>
-        </div>
+        <TableSkeleton rows={6} columns={4} />
       ) : customers.length === 0 ? (
         <Card variant="elevated" padding="lg" className="text-center py-16 space-y-4">
           <div className="w-12 h-12 rounded-2xl bg-[#13211D] border border-[#1F332C] flex items-center justify-center mx-auto text-slate-400">

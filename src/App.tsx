@@ -41,11 +41,28 @@ import { CustomersView } from './components/admin/CustomersView';
 import { ReportsView } from './components/admin/ReportsView';
 import { CmsContentEditor } from './components/admin/CmsContentEditor';
 import { AuditLogsView } from './components/admin/AuditLogsView';
+import { AppLoader } from './components/ui/loading';
+import { CinematicEntryScreen } from './components/public/CinematicEntryScreen';
+import { BackToTop } from './components/public/BackToTop';
 
 export default function App() {
   const { t, language } = useTranslation();
   const { role } = useAuth();
   const toast = useToast();
+
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
+
+  // Session entry state: if directly accessing admin, skip intro; otherwise require explicit 'Begin the Journey'
+  const [hasEnteredSession, setHasEnteredSession] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      const path = window.location.pathname;
+      if (hash === '#admin' || path === '/admin' || path.startsWith('/admin/')) {
+        return true;
+      }
+    }
+    return false;
+  });
 
   // Mode: 'public' or 'admin'
   const [appMode, setAppMode] = useState<'public' | 'admin'>(() => {
@@ -65,6 +82,7 @@ export default function App() {
       const path = window.location.pathname;
       if (hash === '#admin' || path === '/admin' || path.startsWith('/admin/')) {
         setAppMode('admin');
+        setHasEnteredSession(true);
       } else {
         setAppMode('public');
       }
@@ -107,13 +125,22 @@ export default function App() {
   const [faqs, setFaqs] = useState<FAQItem[]>([]);
 
   useEffect(() => {
+    const startTime = Date.now();
     apiClient.getCms()
       .then((data) => {
         if (data.packages) setPackages(data.packages);
         if (data.gallery) setGallery(data.gallery);
         if (data.faqs) setFaqs(data.faqs);
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => {
+        // Guarantee a brief smooth presentation threshold so there is no layout jump
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, 600 - elapsed);
+        setTimeout(() => {
+          setIsInitializing(false);
+        }, remaining);
+      });
   }, []);
 
   // Admin View State
@@ -122,6 +149,11 @@ export default function App() {
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
   const [manualBookingOpen, setManualBookingOpen] = useState<boolean>(false);
   const [adminRefreshKey, setAdminRefreshKey] = useState<number>(0);
+
+  // Show premium branded full-screen loading on initial boot for Admin or entered sessions
+  if (isInitializing && (appMode === 'admin' || hasEnteredSession)) {
+    return <AppLoader context={appMode} />;
+  }
 
   const triggerAdminRefresh = () => setAdminRefreshKey((k) => k + 1);
 
@@ -244,6 +276,10 @@ export default function App() {
   // --- PUBLIC GUEST VIEW ---
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-slate-950">
+      {!hasEnteredSession && (
+        <CinematicEntryScreen onEnter={() => setHasEnteredSession(true)} />
+      )}
+
       <Navbar
         currentView={publicView}
         onOpenBooking={() => handleOpenBooking()}
@@ -332,6 +368,8 @@ export default function App() {
         onOpenLookup={() => handleOpenLookup()}
         onEnterAdmin={handleEnterAdmin}
       />
+
+      <BackToTop />
     </div>
   );
 }

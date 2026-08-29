@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { StatusBadge } from '../ui/StatusBadge';
+import { PageLoader } from '../ui/loading';
 
 interface DepartureDetailModalProps {
   departureId: string;
@@ -270,9 +271,12 @@ export const DepartureDetailModal: React.FC<DepartureDetailModalProps> = ({
   if (loading || !data) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-        <div className="flex flex-col items-center gap-3 text-emerald-400">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-emerald-400 border-t-transparent" />
-          <span className="text-xs font-semibold text-slate-300">Loading departure workspace...</span>
+        <div className="bg-[#091512] border border-[#162922] rounded-2xl p-6 shadow-2xl max-w-sm w-full">
+          <PageLoader
+            message="Loading departure workspace"
+            subtext="Syncing boat allocations & guest manifests"
+            size="sm"
+          />
         </div>
       </div>
     );

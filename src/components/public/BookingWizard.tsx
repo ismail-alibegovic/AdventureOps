@@ -12,6 +12,7 @@ import {
   ShoppingBag,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { AppLoader } from '../ui/loading';
 
 // Sub-components for modularity & token safety
 import { BookingProgressBar } from './booking/BookingProgressBar';
@@ -260,11 +261,12 @@ export const BookingWizard: React.FC<BookingWizardProps> = ({
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-emerald-400 space-y-4">
-        <div className="w-10 h-10 border-3 border-emerald-400 border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm font-medium text-slate-300">
-          {language === 'en' ? 'Preparing adventure availability...' : 'Učitavam termine i pakete...'}
-        </span>
+      <div className="py-8 max-w-4xl mx-auto px-4 sm:px-6">
+        <AppLoader
+          variant="contained"
+          context="public"
+          staticMessage={language === 'en' ? 'Preparing adventure availability & river schedules...' : 'Učitavam termine, pakete i dostupnost...'}
+        />
       </div>
     );
   }
