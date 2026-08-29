@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=esm --packages=external --sourcemap --outfile=dist/server/index.js",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --sourcemap --outfile=dist/server/index.js && node -e \"require('fs').mkdirSync('dist/server',{recursive:true});require('fs').writeFileSync('dist/server/package.json', JSON.stringify({type:'commonjs'}) + '\\n')\"",
     "start": "node dist/server/index.js",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",

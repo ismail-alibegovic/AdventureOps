@@ -1,6 +1,5 @@
 import express from 'express';
 import path from 'path';
-import { createServer as createViteServer } from 'vite';
 import { apiRouter } from './server/routes/api';
 import { getDatabase, ensureDemoFutureDepartures, saveDatabase } from './server/db/database';
 
@@ -44,6 +43,7 @@ async function startServer() {
 
   // Vite middleware for development vs static build in production
   if (process.env.NODE_ENV !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
