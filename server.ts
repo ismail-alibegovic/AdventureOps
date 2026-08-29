@@ -6,7 +6,8 @@ import { getDatabase, ensureDemoFutureDepartures, saveDatabase } from './server/
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT || 3000);
+  const HOST = process.env.HOST || '0.0.0.0';
 
   // Initialize DB and ensure rolling 30-day demo departure availability
   const db = getDatabase();
@@ -44,20 +45,23 @@ async function startServer() {
   // Vite middleware for development vs static build in production
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: false,
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.use(express.static(distPath, { index: false }));
+    app.get(/^\/(?!api\/).*/, (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Neretva Rafting Konjic Platform running on http://localhost:${PORT}`);
+  app.listen(PORT, HOST, () => {
+    console.log(`Neretva Rafting Konjic Platform running on http://${HOST}:${PORT}`);
   });
 }
 
