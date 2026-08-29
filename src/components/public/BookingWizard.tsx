@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../../locales/i18n';
 import { apiClient } from '../../api/client';
-import { Package, Addon, Departure, Booking } from '../../types';
+import { Package, Addon, Departure, Booking, BookingStatus } from '../../types';
 import { useToast } from '../../context/ToastContext';
 import {
   ArrowRight,
@@ -10,7 +10,6 @@ import {
   ChevronUp,
   ChevronDown,
   ShoppingBag,
-  Sparkles,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 
@@ -64,6 +63,10 @@ export const BookingWizard: React.FC<BookingWizardProps> = ({
     Array<{ date: string; has_availability: boolean; spots_left: number }>
   >([]);
 
+  // Initial date parse helper
+  const initialDateObj = initialDate ? new Date(initialDate) : null;
+  const validInitialDate = initialDateObj && !isNaN(initialDateObj.getTime());
+
   // Wizard Form State
   const [selectedPackageId, setSelectedPackageId] = useState<string>(
     preselectedPackageId || initialPackageId || ''
@@ -88,11 +91,33 @@ export const BookingWizard: React.FC<BookingWizardProps> = ({
   const [honeypot, setHoneypot] = useState<string>(''); // spam bot trap
 
   // Calendar month state
-  const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
+  const [currentYear, setCurrentYear] = useState<number>(
+    validInitialDate ? initialDateObj!.getFullYear() : new Date().getFullYear()
+  );
+  const [currentMonth, setCurrentMonth] = useState<number>(
+    validInitialDate ? initialDateObj!.getMonth() + 1 : new Date().getMonth() + 1
+  );
 
   // Result state
   const [createdBooking, setCreatedBooking] = useState<Booking | null>(null);
+
+  // Sync when preselectedPackageId or initialDate props update
+  useEffect(() => {
+    if (preselectedPackageId) {
+      setSelectedPackageId(preselectedPackageId);
+    }
+  }, [preselectedPackageId]);
+
+  useEffect(() => {
+    if (initialDate) {
+      setSelectedDate(initialDate);
+      const d = new Date(initialDate);
+      if (!isNaN(d.getTime())) {
+        setCurrentYear(d.getFullYear());
+        setCurrentMonth(d.getMonth() + 1);
+      }
+    }
+  }, [initialDate]);
 
   // Load packages & addons
   useEffect(() => {
@@ -209,11 +234,22 @@ export const BookingWizard: React.FC<BookingWizardProps> = ({
       });
 
       setCreatedBooking(res);
-      toast.success(
-        language === 'en'
-          ? `Booking confirmed! Reference: ${res.reservation_code || (res as any).booking_code}`
-          : `Rezervacija uspješna! Broj: ${res.reservation_code || (res as any).booking_code}`
-      );
+      const code = res.reservation_code || (res as any).booking_code;
+      const isRequested = res.booking_status === BookingStatus.REQUESTED;
+
+      if (isRequested) {
+        toast.info(
+          language === 'en'
+            ? `Booking request received. Reference: ${code}`
+            : `Zahtjev za rezervaciju zaprimljen. Referenca: ${code}`
+        );
+      } else {
+        toast.success(
+          language === 'en'
+            ? `Booking confirmed. Reference: ${code}`
+            : `Rezervacija potvrđena. Referenca: ${code}`
+        );
+      }
       if (onFinished) onFinished(res);
     } catch (err: any) {
       toast.error(err.message || 'Booking submission failed. Please try another departure time or contact us.');

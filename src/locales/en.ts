@@ -21,13 +21,13 @@ export const en = {
   // Hero
   hero_tagline: 'Emerald Adventure in the Heart of Bosnia & Herzegovina',
   hero_title: 'Experience the Grand Neretva River Canyon',
-  hero_subtitle: '23 km descent through pristine wilderness, crystal emerald waters, Class III-IV rapids, certified IRF river guides, and authentic barbecue hospitality.',
+  hero_subtitle: '23 km descent through pristine wilderness, crystal emerald waters, Class III-IV rapids, professional river guides, and authentic barbecue hospitality.',
   hero_cta_book: 'Book Your Adventure',
   hero_cta_packages: 'Explore Experiences',
-  hero_badge_experience: '18+ Years Experience',
-  hero_badge_safety: '100% Safety Track Record',
+  hero_badge_experience: 'Experienced River Guides',
+  hero_badge_safety: 'Guest-First Safety Standards',
   hero_badge_gear: 'All Protective Gear Included',
-  hero_badge_guides: 'Certified IRF River Guides',
+  hero_badge_guides: 'Professional River Crew',
 
   // Trust & Quick Info
   trust_title: 'Why Choose AdventureOps Neretva?',
@@ -38,12 +38,12 @@ export const en = {
   stat_duration_label: 'Total trip duration',
   stat_rapids: 'Class III - IV',
   stat_rapids_label: 'Exciting rapids',
-  stat_guests: '25,000+',
-  stat_guests_label: 'Happy adventurers',
+  stat_guests: 'Complete Gear',
+  stat_guests_label: 'All equipment provided',
 
   // Packages Section
   pkg_section_title: 'Choose Your Rafting Experience',
-  pkg_section_subtitle: 'All packages include full protective equipment, certified guide, insurance, and upstream launch transfer.',
+  pkg_section_subtitle: 'All packages include full protective equipment, experienced guide, insurance, and upstream launch transfer.',
   pkg_duration: 'Duration',
   pkg_min_age: 'Min. Age',
   pkg_difficulty: 'Difficulty',
@@ -61,7 +61,7 @@ export const en = {
   route_step2_title: '2. Transfer to Glavatičevo',
   route_step2_desc: 'Scenic shuttle drive through the mountains to our river launch point in Glavatičevo.',
   route_step3_title: '3. Safety Briefing & Launch',
-  route_step3_desc: 'Comprehensive briefing by your IRF guide on paddling commands and water safety protocols.',
+  route_step3_desc: 'Comprehensive briefing by your guide on paddling commands and water safety protocols.',
   route_step4_title: '4. Rakitnica Confluence & Canyon',
   route_step4_desc: 'Navigating deep canyon gorges, waterfall swim breaks, and supervised cliff jumping spots.',
   route_step5_title: '5. Traditional Barbecue & Finish',
@@ -69,14 +69,14 @@ export const en = {
 
   // Safety
   safety_title: 'Your Safety is Our Highest Mission',
-  safety_desc: 'White-water river exploration demands rigorous discipline, tested equipment, and certified professionals.',
-  safety_f1_title: 'Certified IRF Guides',
-  safety_f1_desc: 'All river guides hold International Rafting Federation certifications and Swiftwater Rescue credentials.',
-  safety_f2_title: 'Tested CE Protective Gear',
-  safety_f2_desc: 'We provide 5mm neoprene wetsuits, thermal river booties, high-buoyancy life vests, and helmets.',
-  safety_f3_title: 'Insurance & Medical Kit',
-  safety_f3_desc: 'Every guest is covered by comprehensive activity insurance, with waterproof trauma kits on each boat.',
-  safety_f4_title: 'Tailored Experience Levels',
+  safety_desc: 'White-water river exploration demands rigorous discipline, tested equipment, and trained professionals.',
+  safety_f1_title: 'Experienced River Guides',
+  safety_f1_desc: 'Our skippers are thoroughly trained in whitewater navigation, boat control, and river safety.',
+  safety_f2_title: 'Quality Protective Gear',
+  safety_f2_desc: 'We provide 5mm neoprene wetsuits, thermal river booties, high-buoyancy life vests, and safety helmets.',
+  safety_f3_title: 'First Aid & River Safety',
+  safety_f3_desc: 'Every boat carries waterproof first aid kits, rescue throwlines, and emergency protocols.',
+  safety_f4_title: 'Tailored Trip Pacing',
   safety_f4_desc: 'We adjust paddling intensity and pacing to your group profile – from relaxed families to thrill-seekers.',
 
   // Gallery
@@ -89,8 +89,8 @@ export const en = {
   gallery_filter_food: 'Food & Base Life',
 
   // Reviews
-  reviews_title: 'What Our Guests Say',
-  reviews_subtitle: 'Over 500+ five-star verified reviews across Google and TripAdvisor.',
+  reviews_title: 'Guest Experiences',
+  reviews_subtitle: 'Real stories and feedback from adventurers who rafted the Neretva River canyon with us.',
 
   // FAQ
   faq_title: 'Frequently Asked Questions',

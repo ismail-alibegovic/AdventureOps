@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from '../../locales/i18n';
 import { UserRole } from '../../types';
-import { LanguageSwitcher } from '../public/LanguageSwitcher';
 import {
   LayoutDashboard,
   CalendarDays,
@@ -17,7 +16,7 @@ import {
   ArrowUpRight,
   Menu,
   X,
-  Sparkles,
+  Activity,
   ChevronRight,
   ShieldCheck,
   Circle,
@@ -229,7 +228,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <LanguageSwitcher idPrefix="admin-mob-lang" variant="compact" />
           <button
             type="button"
             onClick={onOpenManualBooking}
@@ -560,12 +558,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0E201A] hover:bg-[#142E25] border border-[#1F3E32] text-emerald-400 text-xs font-semibold transition-colors cursor-pointer"
               title="Run Atomic Concurrency & Overbooking Tests"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <Activity className="w-3.5 h-3.5 text-emerald-400" />
               <span className="font-mono text-[11px]">Test Suite</span>
             </button>
-
-            {/* Language Switcher */}
-            <LanguageSwitcher idPrefix="admin-top-lang" variant="compact" />
           </div>
         </header>
 

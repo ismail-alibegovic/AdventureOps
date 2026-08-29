@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Booking } from '../../../types';
+import { Booking, BookingStatus } from '../../../types';
 import {
   CheckCircle2,
   Copy,
@@ -14,7 +14,7 @@ import {
   ShieldCheck,
   ArrowRight,
   Home,
-  Sparkles,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from '../../ui/Button';
 
@@ -31,6 +31,7 @@ export const BookingSuccessPass: React.FC<BookingSuccessPassProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
+  const isRequested = booking.booking_status === BookingStatus.REQUESTED;
   const reservationCode = booking.reservation_code || (booking as any).booking_code || 'NR-2026';
   const pkgName = language === 'en' ? booking.package?.name_en : booking.package?.name_bs;
 
@@ -62,43 +63,84 @@ export const BookingSuccessPass: React.FC<BookingSuccessPassProps> = ({
   };
 
   const whatsappMessage = encodeURIComponent(
-    language === 'en'
-      ? `Hello Neretva Rafting Konjic! My booking reference is ${reservationCode} for ${guestName} (${booking.guest_count} guests) on ${depDate}. Looking forward to confirming arrival details.`
-      : `Pozdrav Neretva Rafting Konjic! Moja šifra rezervacije je ${reservationCode} za ${guestName} (${booking.guest_count} osoba) na datum ${depDate}. Želim potvrditi detalje dolaska.`
+    isRequested
+      ? (language === 'en'
+          ? `Hello Neretva Rafting Konjic! My booking request reference is ${reservationCode} for ${guestName} (${booking.guest_count} guests) on ${depDate}. Following up on availability and confirmation.`
+          : `Pozdrav Neretva Rafting Konjic! Moja šifra zahtjeva za rezervaciju je ${reservationCode} za ${guestName} (${booking.guest_count} osoba) na datum ${depDate}. Želim provjeriti status potvrde.`)
+      : (language === 'en'
+          ? `Hello Neretva Rafting Konjic! My booking reference is ${reservationCode} for ${guestName} (${booking.guest_count} guests) on ${depDate}. Looking forward to confirming arrival details.`
+          : `Pozdrav Neretva Rafting Konjic! Moja šifra rezervacije je ${reservationCode} za ${guestName} (${booking.guest_count} osoba) na datum ${depDate}. Želim potvrditi detalje dolaska.`)
   );
 
   return (
     <div className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-6 space-y-8 animate-fadeIn">
       {/* Header Badge & Title */}
       <div className="text-center space-y-3">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5 mx-auto shadow-2xl shadow-emerald-500/30 flex items-center justify-center">
-          <div className="w-full h-full bg-[#071310] rounded-[22px] flex items-center justify-center text-emerald-400">
-            <CheckCircle2 className="w-9 h-9 sm:w-11 sm:h-11" />
+        {isRequested ? (
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-amber-500 to-amber-300 p-0.5 mx-auto shadow-2xl shadow-amber-500/25 flex items-center justify-center">
+            <div className="w-full h-full bg-[#141006] rounded-[22px] flex items-center justify-center text-amber-400">
+              <Clock className="w-9 h-9 sm:w-11 sm:h-11" />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5 mx-auto shadow-2xl shadow-emerald-500/30 flex items-center justify-center">
+            <div className="w-full h-full bg-[#071310] rounded-[22px] flex items-center justify-center text-emerald-400">
+              <CheckCircle2 className="w-9 h-9 sm:w-11 sm:h-11" />
+            </div>
+          </div>
+        )}
 
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>{language === 'en' ? 'Reservation Confirmed' : 'Rezervacija Uspješno Evidentirana'}</span>
-        </div>
+        {isRequested ? (
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-widest">
+            <Clock className="w-3.5 h-3.5" />
+            <span>{language === 'en' ? 'Booking Request Received' : 'Zahtjev za Rezervaciju Zaprimljen'}</span>
+          </div>
+        ) : (
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>{language === 'en' ? 'Reservation Confirmed' : 'Rezervacija Potvrđena'}</span>
+          </div>
+        )}
 
         <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-display tracking-tight">
-          {language === 'en' ? 'We Look Forward to Welcoming You!' : 'Radujemo Se Vašem Dolasku na Neretvu!'}
+          {isRequested
+            ? (language === 'en' ? 'Booking Request Received' : 'Zahtjev za Rezervaciju Zaprimljen')
+            : (language === 'en' ? 'Reservation Confirmed' : 'Rezervacija Potvrđena')}
         </h1>
 
-        <p className="text-sm text-slate-400 max-w-lg mx-auto">
-          {language === 'en'
-            ? 'Your spot is secured in our dispatch system. A full confirmation summary has been registered.'
-            : 'Vaša mjesta su evidentirana u dispečerskom sistemu. Sačuvajte vašu šifru rezervacije.'}
+        <p className="text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+          {isRequested
+            ? (language === 'en'
+                ? 'Your booking request has been received successfully. Our team will review availability and confirm your reservation shortly.'
+                : 'Vaš zahtjev za rezervaciju je uspješno zaprimljen. Naš tim će pregledati dostupnost i ubrzo potvrditi vašu rezervaciju.')
+            : (language === 'en'
+                ? 'Your booking is confirmed and your places are secured. A full confirmation summary has been registered.'
+                : 'Vaša rezervacija je potvrđena i vaša mjesta su osigurana. Sačuvajte vašu šifru rezervacije.')}
         </p>
       </div>
 
       {/* Digital Boarding Pass / Ticket Card */}
-      <div className="bg-[#071310] border-2 border-emerald-500/40 rounded-3xl overflow-hidden shadow-2xl shadow-emerald-950/60">
+      <div
+        className={`bg-[#071310] border-2 rounded-3xl overflow-hidden shadow-2xl ${
+          isRequested
+            ? 'border-amber-500/40 shadow-amber-950/40'
+            : 'border-emerald-500/40 shadow-emerald-950/60'
+        }`}
+      >
         {/* Ticket Header: Reservation Code */}
-        <div className="bg-gradient-to-r from-[#0C241B] via-[#0E2C22] to-[#0C241B] border-b border-[#1F3E32] p-6 text-center sm:flex sm:items-center sm:justify-between">
+        <div
+          className={`p-6 text-center sm:flex sm:items-center sm:justify-between border-b ${
+            isRequested
+              ? 'bg-gradient-to-r from-[#201807] via-[#2A1E0A] to-[#201807] border-[#3D2D10]'
+              : 'bg-gradient-to-r from-[#0C241B] via-[#0E2C22] to-[#0C241B] border-[#1F3E32]'
+          }`}
+        >
           <div className="text-left">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400 block">
+            <span
+              className={`text-[11px] font-bold uppercase tracking-widest block ${
+                isRequested ? 'text-amber-400' : 'text-emerald-400'
+              }`}
+            >
               {language === 'en' ? 'Reservation Reference' : 'Šifra Rezervacije'}
             </span>
             <span className="text-2xl sm:text-3xl font-black font-mono tracking-widest text-white">
@@ -109,11 +151,15 @@ export const BookingSuccessPass: React.FC<BookingSuccessPassProps> = ({
           <button
             type="button"
             onClick={handleCopyCode}
-            className="mt-3 sm:mt-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#143327] hover:bg-[#1B4434] text-emerald-300 text-xs font-bold transition-colors cursor-pointer"
+            className={`mt-3 sm:mt-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+              isRequested
+                ? 'bg-[#2A200B] hover:bg-[#382B0E] text-amber-300'
+                : 'bg-[#143327] hover:bg-[#1B4434] text-emerald-300'
+            }`}
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4 text-emerald-400" />
+                <Check className={`w-4 h-4 ${isRequested ? 'text-amber-400' : 'text-emerald-400'}`} />
                 <span>{language === 'en' ? 'Copied to Clipboard!' : 'Kopirano!'}</span>
               </>
             ) : (
@@ -149,7 +195,11 @@ export const BookingSuccessPass: React.FC<BookingSuccessPassProps> = ({
               <strong className="text-white text-lg font-bold font-display block">
                 {depDate}
               </strong>
-              <div className="text-xs text-emerald-400 flex items-center gap-1.5 font-semibold">
+              <div
+                className={`text-xs flex items-center gap-1.5 font-semibold ${
+                  isRequested ? 'text-amber-400' : 'text-emerald-400'
+                }`}
+              >
                 <Clock className="w-3.5 h-3.5" />
                 <span>
                   {language === 'en' ? 'Launch:' : 'Polazak:'} {depTime} {meetTime && `(${language === 'en' ? 'Meet at' : 'Sastanak u'} ${meetTime})`}
@@ -178,7 +228,11 @@ export const BookingSuccessPass: React.FC<BookingSuccessPassProps> = ({
                 {language === 'en' ? 'Total Payable at Base' : 'Ukupan Iznos za Plaćanje'}
               </span>
               <div className="flex items-baseline gap-2">
-                <strong className="text-2xl sm:text-3xl font-black text-emerald-400 font-display font-mono">
+                <strong
+                  className={`text-2xl sm:text-3xl font-black font-display font-mono ${
+                    isRequested ? 'text-amber-400' : 'text-emerald-400'
+                  }`}
+                >
                   {booking.total_amount} <span className="text-sm text-slate-300">BAM</span>
                 </strong>
                 <span className="text-xs text-slate-400 font-mono">
@@ -221,15 +275,25 @@ export const BookingSuccessPass: React.FC<BookingSuccessPassProps> = ({
           {/* What Happens Next Roadmap */}
           <div className="space-y-3 pt-4 border-t border-[#182C24]">
             <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <ShieldCheck className={`w-4 h-4 ${isRequested ? 'text-amber-400' : 'text-emerald-400'}`} />
               <span>{language === 'en' ? 'What Happens Next?' : 'Šta Dalje? Koraci do Raftinga:'}</span>
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs text-slate-300">
-              <div className="p-3 rounded-xl bg-[#091612] border border-[#182C24] space-y-1">
-                <span className="text-emerald-400 font-bold block">1. {language === 'en' ? 'Dispatch Review' : 'Evidencija'}</span>
+              <div
+                className={`p-3 rounded-xl border space-y-1 ${
+                  isRequested
+                    ? 'bg-[#181308] border-[#382B10]'
+                    : 'bg-[#091612] border-[#182C24]'
+                }`}
+              >
+                <span className={`font-bold block ${isRequested ? 'text-amber-400' : 'text-emerald-400'}`}>
+                  1. {isRequested ? (language === 'en' ? 'Availability Review' : 'Pregled Zahtjeva') : (language === 'en' ? 'Dispatch Scheduled' : 'Evidencija')}
+                </span>
                 <p className="text-[11px] text-slate-400 leading-snug">
-                  {language === 'en' ? 'Our operations desk reserves your boats & guide.' : 'Rezervacija je zabilježena u rasporedu čamaca.'}
+                  {isRequested
+                    ? (language === 'en' ? 'Operations desk reviews your dates & confirms reservation.' : 'Dispečer pregledava zahtjev i potvrđuje rezervaciju.')
+                    : (language === 'en' ? 'Our operations desk reserves your boats & guide.' : 'Rezervacija je zabilježena u rasporedu čamaca.')}
                 </p>
               </div>
 

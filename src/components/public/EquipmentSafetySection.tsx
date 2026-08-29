@@ -20,25 +20,25 @@ export const EquipmentSafetySection: React.FC = () => {
       icon: UserCheck,
       title: t('safety_f1_title'),
       desc: t('safety_f1_desc'),
-      badge: 'IRF Certified',
+      badge: 'River Crew',
     },
     {
       icon: ShieldCheck,
       title: t('safety_f2_title'),
       desc: t('safety_f2_desc'),
-      badge: 'CE EN ISO',
+      badge: 'Quality Gear',
     },
     {
       icon: HeartPulse,
       title: t('safety_f3_title'),
       desc: t('safety_f3_desc'),
-      badge: 'Rescue 3 Pro',
+      badge: 'Safety Ready',
     },
     {
       icon: Award,
       title: t('safety_f4_title'),
       desc: t('safety_f4_desc'),
-      badge: '18+ Years Heritage',
+      badge: 'Briefed',
     },
   ];
 
@@ -65,13 +65,13 @@ export const EquipmentSafetySection: React.FC = () => {
     {
       name:
         language === 'en'
-          ? 'Certified Life Jacket (PFD 70N+)'
+          ? 'Tested Life Jacket (PFD 70N+)'
           : 'Spasilački prsluk (PFD 70N+)',
       desc:
         language === 'en'
-          ? 'CE-tested high buoyancy vests with integrated chest harnesses and rescue collars.'
-          : 'CE atestirani prsluci visoke plovnosti sa sigurnosnim pojasevima i spasilačkom omčom.',
-      tag: 'CE EN ISO 12402',
+          ? 'High-buoyancy vests with integrated chest harnesses and rescue collars.'
+          : 'Prsluci visoke plovnosti sa sigurnosnim pojasevima i spasilačkom omčom.',
+      tag: 'Tested Buoyancy',
     },
     {
       name:
@@ -82,7 +82,7 @@ export const EquipmentSafetySection: React.FC = () => {
         language === 'en'
           ? 'Lightweight, impact-resistant ABS shell with rapid dial fit adjustment.'
           : 'Lagana, čvrsta i ventilirana konstrukcija sa brzim podešavanjem obima glave.',
-      tag: 'CE EN 1385',
+      tag: 'Impact Resistant',
     },
     {
       name:
@@ -93,18 +93,18 @@ export const EquipmentSafetySection: React.FC = () => {
         language === 'en'
           ? 'Balanced composite shaft with high-durability polymer blade.'
           : 'Balansirana težina sa neklizajućim rukohvatom prilagođena svim učesnicima raftinga.',
-      tag: 'Anodized Aluminum',
+      tag: 'Composite Blade',
     },
     {
       name:
         language === 'en'
-          ? 'Rescue Throwbag & Trauma Kit'
+          ? 'Rescue Throwbag & First Aid Kit'
           : 'Spasilačko uže i prva pomoć',
       desc:
         language === 'en'
-          ? 'Carried aboard every boat, operated by our certified swiftwater rescue guides.'
-          : 'Obavezna oprema u svakom čamcu kojom rukuje naš licencirani IRF instruktor.',
-      tag: 'Rescue 3 Standard',
+          ? 'Carried aboard every boat, ready for swift deployment and support.'
+          : 'Obavezna oprema u svakom čamcu spremna za brzu intervenciju.',
+      tag: 'Standard Equipment',
     },
   ];
 
@@ -118,7 +118,7 @@ export const EquipmentSafetySection: React.FC = () => {
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
           <SectionHeader
-            eyebrow={language === 'en' ? 'Uncompromising Safety Standards' : '100% Posvećenost Bezbjednosti'}
+            eyebrow={language === 'en' ? 'Safety Standards & Procedures' : 'Standardi Bezbjednosti i Procedure'}
             title={t('safety_title')}
             description={t('safety_desc')}
             align="center"
@@ -225,7 +225,7 @@ export const EquipmentSafetySection: React.FC = () => {
                 </span>
               </div>
               <span className="text-emerald-400 font-semibold shrink-0">
-                {language === 'en' ? '✓ 100% Safety Track Record' : '✓ 100% Bezbednost garantovana'}
+                {language === 'en' ? '✓ Guest-First Safety Standards' : '✓ Standardi bezbjednosti na prvom mjestu'}
               </span>
             </div>
           </Card>

@@ -13,6 +13,7 @@ import {
 import { motion } from 'motion/react';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Button } from '../ui/Button';
+import { ASSET_IMAGES } from '../../lib/imageAssets';
 
 interface RakitnicaRouteSectionProps {
   onBookRakitnica?: () => void;
@@ -134,9 +135,9 @@ export const RakitnicaRouteSection: React.FC<RakitnicaRouteSectionProps> = ({
           >
             <div className="relative rounded-2xl overflow-hidden border border-[#1F332C] shadow-2xl bg-[#0E1A17] group">
               <img
-                src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1200&q=80"
+                src={ASSET_IMAGES.routeCanyon}
                 alt="Neretva River Glavatičevo to Konjic"
-                className="w-full h-88 object-cover brightness-60 group-hover:scale-103 transition-transform duration-500"
+                className="w-full h-88 object-cover brightness-65 group-hover:scale-103 transition-transform duration-500"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#07110F] via-[#07110F]/40 to-transparent" />

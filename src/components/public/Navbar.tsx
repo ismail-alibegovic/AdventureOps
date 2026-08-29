@@ -14,12 +14,8 @@ import {
   ShieldCheck,
   Image as ImageIcon,
   HelpCircle,
-  MessageSquare,
-  Sparkles,
   ChevronRight,
-  ExternalLink,
 } from 'lucide-react';
-import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface NavbarProps {
   currentView?: string;
@@ -49,7 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       setIsScrolled(window.scrollY > 25);
 
       // Simple active section detection for homepage
-      const sections = ['packages', 'route', 'safety', 'gallery', 'faq', 'meeting-point'];
+      const sections = ['packages', 'route', 'safety', 'gallery', 'faq'];
       const scrollPos = window.scrollY + 160;
 
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -118,11 +114,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       label: t('nav_faq') || 'FAQ',
       icon: HelpCircle,
     },
-    {
-      id: 'meeting-point',
-      label: t('nav_meeting_point') || 'Meeting Point',
-      icon: MapPin,
-    },
   ];
 
   const handleLinkClick = (id: string) => {
@@ -170,46 +161,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             : 'bg-[#06100E]/80 backdrop-blur-md border-b border-[#162822] py-0'
         }`}
       >
-        {/* Top Operational Status Ribbon (Visible on larger screens when not scrolled far) */}
-        <div
-          className={`overflow-hidden transition-all duration-300 bg-[#040B0A] border-b border-[#14231E] ${
-            isScrolled ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'
-          }`}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 flex items-center justify-between text-[11px] text-slate-400">
-            {/* Left: River Conditions Live Pill */}
-            <div className="flex items-center gap-2">
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              <span className="font-semibold text-emerald-400">
-                {language === 'en' ? 'Live River Conditions:' : 'Stanje na Neretvi:'}
-              </span>
-              <span className="hidden sm:inline text-slate-300">
-                {language === 'en'
-                  ? 'Optimal Water Level • Class II-III • Departures 10:00 & 14:00'
-                  : 'Idealan vodostaj • Klasa II-III • Polasci 10:00 i 14:00'}
-              </span>
-            </div>
-
-            {/* Right: Direct Desk & Location */}
-            <div className="flex items-center gap-4 text-slate-400">
-              <div className="hidden md:flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                <MapPin className="w-3 h-3 text-emerald-400" />
-                <span>Džajića Buk, Konjic</span>
-              </div>
-              <a
-                href="tel:+38761123456"
-                className="flex items-center gap-1.5 font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
-              >
-                <Phone className="w-3 h-3" />
-                <span>+387 61 123 456</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
         {/* Main Navbar Bar */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-18 sm:h-20 gap-4">
@@ -264,7 +215,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               })}
             </nav>
 
-            {/* RIGHT: Actions (Lookup, Language Switcher, Book CTA) */}
+            {/* RIGHT: Actions (Lookup, Book CTA) */}
             <div className="hidden sm:flex items-center gap-3 shrink-0">
               {/* Find Booking Button */}
               <button
@@ -275,9 +226,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Search className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{t('nav_find_booking')}</span>
               </button>
-
-              {/* Language Switcher */}
-              <LanguageSwitcher idPrefix="nav-desktop-lang" variant="compact" />
 
               {/* Primary Book Button */}
               <button
@@ -355,29 +303,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <LanguageSwitcher idPrefix="nav-mobile-drawer-lang" variant="compact" />
-                  <button
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="w-9 h-9 rounded-xl bg-[#0D2019] border border-[#1C332A] text-slate-300 hover:text-white flex items-center justify-center cursor-pointer"
-                    aria-label="Close menu"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Live Status Pill inside Mobile Drawer */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-[#0B1A15] border border-[#1A2E27] text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-slate-300 font-medium">
-                    {language === 'en' ? 'River Level: Class II-III (Optimal)' : 'Vodostaj: Klasa II-III (Idealan)'}
-                  </span>
-                </div>
-                <span className="text-emerald-400 font-bold font-mono text-[10px] bg-[#071310] px-2 py-0.5 rounded border border-[#162B23]">
-                  {language === 'en' ? 'OPEN' : 'OTVORENO'}
-                </span>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-9 h-9 rounded-xl bg-[#0D2019] border border-[#1C332A] text-slate-300 hover:text-white flex items-center justify-center cursor-pointer"
+                  aria-label="Close menu"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
               {/* Navigation Links with large touch targets (48px+) */}
@@ -455,12 +387,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <Phone className="w-3.5 h-3.5" />
                     <span>+387 61 123 456</span>
                   </a>
-                  <span className="text-[11px] text-slate-500">24/7 Operations</span>
+                  <span className="text-[11px] text-slate-500">Base Operations: 08:00 – 19:00</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-slate-400 py-1">
                   <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Džajića Buk bb, 88400 Konjic</span>
+                  <span>Džajići bb, 88400 Konjic</span>
                 </div>
               </div>
             </motion.div>
@@ -470,3 +402,4 @@ export const Navbar: React.FC<NavbarProps> = ({
     </>
   );
 };
+

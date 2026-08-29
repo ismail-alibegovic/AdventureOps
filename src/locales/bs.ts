@@ -21,13 +21,13 @@ export const bs = {
   // Hero
   hero_tagline: 'Smaragdna avantura u srcu Hercegovine',
   hero_title: 'Doživite Kanjon Neretve na Pravi Način',
-  hero_subtitle: '23 km nezaboravnog spusta, kristalno čista voda, brzaci klase III-IV, profesionalni IRF skiperi i vrhunska domaća kuhinja.',
+  hero_subtitle: '23 km nezaboravnog spusta, kristalno čista voda, brzaci klase III-IV, profesionalni skiperi i vrhunska domaća kuhinja.',
   hero_cta_book: 'Rezerviši Termin',
   hero_cta_packages: 'Istraži Pakete',
-  hero_badge_experience: '18+ Godina Iskustva',
-  hero_badge_safety: '100% Sigurnosni Standard',
+  hero_badge_experience: 'Iskusni Riječni Skiperi',
+  hero_badge_safety: 'Vrhunski Sigurnosni Standard',
   hero_badge_gear: 'Kompletna Oprema Uključena',
-  hero_badge_guides: 'Licencirani IRF Skiperi',
+  hero_badge_guides: 'Profesionalna Posada',
 
   // Trust & Quick Info
   trust_title: 'Zašto Izabrati Neretva Rafting Konjic?',
@@ -38,12 +38,12 @@ export const bs = {
   stat_duration_label: 'Trajanje kompletne avanture',
   stat_rapids: 'Klasa III - IV',
   stat_rapids_label: 'Uzbudljivi brzaci',
-  stat_guests: '25.000+',
-  stat_guests_label: 'Zadovoljnih gostiju',
+  stat_guests: 'Sva Oprema',
+  stat_guests_label: 'Uključeno za sve goste',
 
   // Packages Section
   pkg_section_title: 'Izaberite Vaš Rafting Paket',
-  pkg_section_subtitle: 'Svi paketi uključuju kompletnu zaštitnu opremu, licenciranog skipera, osiguranje i transfer do starta.',
+  pkg_section_subtitle: 'Svi paketi uključuju kompletnu zaštitnu opremu, iskusnog skipera, osiguranje i transfer do starta.',
   pkg_duration: 'Trajanje',
   pkg_min_age: 'Min. starost',
   pkg_difficulty: 'Težina',
@@ -70,14 +70,14 @@ export const bs = {
   // Safety
   safety_title: 'Vaša Sigurnost je Naš Apsolutni Prioritet',
   safety_desc: 'Rafting na divljim vodama zahtijeva maksimalnu odgovornost, vrhunsku opremu i obučene profesionalce.',
-  safety_f1_title: 'Certificirani IRF Skiperi',
-  safety_f1_desc: 'Svi naši vodiči posjeduju međunarodne licence International Rafting Federation i certifikate spašavanja.',
-  safety_f2_title: 'Atestirana EU Zaštitna Oprema',
+  safety_f1_title: 'Iskusni Riječni Skiperi',
+  safety_f1_desc: 'Svi naši vodiči posjeduju bogato iskustvo u navigaciji, vođenju čamca i brzim vodama.',
+  safety_f2_title: 'Kvalitetna Zaštitna Oprema',
   safety_f2_desc: 'Koristimo 5mm neoprenska odijela, termo čizmice, homologovane spasilačke prsluke visoke plovnosti i kacige.',
   safety_f3_title: 'Osiguranje i Prva Pomoć',
   safety_f3_desc: 'Svi učesnici su osigurani tokom trajanja ture, a svaki čamac opremljen je vodootpornim kompletom prve pomoći.',
   safety_f4_title: 'Prilagođeni Programi',
-  safety_f4_desc: 'Tempo i dinamiku spusta prilagođavamo profilu grupe – od porodičnog uživanja do ekstremnog adrenalina.',
+  safety_f4_desc: 'Tempo i dinamiku spusta prilagođavamo profilu grupe – od porodičnog uživanja do dinamičnog raftinga.',
 
   // Gallery
   gallery_title: 'Galerija Nezaboravnih Trenutaka',
@@ -89,8 +89,8 @@ export const bs = {
   gallery_filter_food: 'Hrana i Druženje',
 
   // Reviews
-  reviews_title: 'Šta Kažu Naši Gosti?',
-  reviews_subtitle: 'Preko 500+ recenzija sa ocjenom 5.0 na Google i TripAdvisor platformama.',
+  reviews_title: 'Utisci Naših Gostiju',
+  reviews_subtitle: 'Iskustva i utisci avanturista koji su sa nama prošli kanjon Neretve.',
 
   // FAQ
   faq_title: 'Često Postavljana Pitanja',

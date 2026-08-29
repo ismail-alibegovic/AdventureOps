@@ -196,7 +196,7 @@ export function getInitialSeedData(): DatabaseSchema {
       'Fotografije visoke rezolucije'
     ],
     sort_order: 2,
-    image_url: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1200&q=80',
+    image_url: '/src/assets/images/regenerated_image_1787966281339.png',
     river_length_km: 25,
     created_at: now,
     updated_at: now,
@@ -230,7 +230,7 @@ export function getInitialSeedData(): DatabaseSchema {
       'Transfer i osiguranje'
     ],
     sort_order: 3,
-    image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80',
+    image_url: '/src/assets/images/regenerated_image_1787966291211.jpg',
     river_length_km: 15,
     created_at: now,
     updated_at: now,
@@ -951,7 +951,7 @@ export function getInitialSeedData(): DatabaseSchema {
     {
       id: 'gal-02',
       organization_id: orgId,
-      image_url: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1200&q=80',
+      image_url: '/src/assets/images/regenerated_image_1787966301965.jpg',
       alt_bs: 'Smaragdno zeleni kanjon rijeke Neretve kod Konjica',
       alt_en: 'Emerald green canyon of Neretva river near Konjic',
       category: 'canyon',
@@ -962,7 +962,7 @@ export function getInitialSeedData(): DatabaseSchema {
     {
       id: 'gal-03',
       organization_id: orgId,
-      image_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80',
+      image_url: '/src/assets/images/regenerated_image_1787966302462.jpg',
       alt_bs: 'Timsko veslanje u netaknutoj prirodi',
       alt_en: 'Team paddling through serene mountain river valley',
       category: 'adventure',
@@ -973,7 +973,7 @@ export function getInitialSeedData(): DatabaseSchema {
     {
       id: 'gal-04',
       organization_id: orgId,
-      image_url: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=80',
+      image_url: '/src/assets/images/regenerated_image_1787966314946.webp',
       alt_bs: 'Planinski pejzaži i vodopadi u kanjonu Rakitnice',
       alt_en: 'Mountain landscapes and pristine waterfalls at Rakitnica confluence',
       category: 'nature',
@@ -984,7 +984,7 @@ export function getInitialSeedData(): DatabaseSchema {
     {
       id: 'gal-05',
       organization_id: orgId,
-      image_url: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=1200&q=80',
+      image_url: '/src/assets/images/regenerated_image_1787966314676.png',
       alt_bs: 'Skokovi sa stijena i osvježenje u kristalno čistoj vodi',
       alt_en: 'Cliff jumping and swimming in crystal clear alpine waters',
       category: 'adventure',
@@ -995,7 +995,7 @@ export function getInitialSeedData(): DatabaseSchema {
     {
       id: 'gal-06',
       organization_id: orgId,
-      image_url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+      image_url: '/src/assets/images/regenerated_image_1787966303965.png',
       alt_bs: 'Tradicionalni hercegovački ručak na obali rijeke',
       alt_en: 'Traditional riverside barbecue lunch and refreshments',
       category: 'food',

@@ -5,6 +5,7 @@ import { Clock, Users, Check, Star, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Button } from '../ui/Button';
+import { resolveImageUrl } from '../../lib/imageAssets';
 
 interface PackagesSectionProps {
   packages?: Package[];
@@ -59,7 +60,7 @@ export const PackagesSection: React.FC<PackagesSectionProps> = ({
                 {/* Image Header with Badge Overlay */}
                 <div className="relative h-60 overflow-hidden bg-slate-900 group">
                   <img
-                    src={pkg.image_url}
+                    src={resolveImageUrl(pkg.image_url)}
                     alt={name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     referrerPolicy="no-referrer"

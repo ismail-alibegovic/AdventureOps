@@ -73,17 +73,17 @@ export const Footer: React.FC<FooterProps> = ({
 
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-md">
               {language === 'en'
-                ? 'Adventure on the Neretva, made unforgettable. Certified IRF guides, homologated CE equipment, and authentic riverside barbecue hospitality in the heart of Bosnia & Herzegovina.'
-                : 'Avantura na Neretvi napravljena za pamćenje. Certificirani IRF skiperi, provjerena zaštitna oprema i autentično gostoprimstvo u Konjicu.'}
+                ? 'Adventure on the Neretva, made unforgettable. Experienced local guides, quality safety equipment, and authentic riverside hospitality in Konjic, Bosnia & Herzegovina.'
+                : 'Avantura na Neretvi napravljena za pamćenje. Iskusni lokalni vodiči, provjerena zaštitna oprema i autentično gostoprimstvo u Konjicu.'}
             </p>
 
             <div className="pt-1 flex flex-col gap-1.5 text-xs text-slate-400">
               <div className="flex items-center gap-2 text-emerald-400 font-semibold">
                 <Shield className="w-4 h-4 shrink-0" />
-                <span>International Rafting Federation (IRF) Partner</span>
+                <span>{language === 'en' ? 'Professional River Guiding Standards' : 'Profesionalni standardi vođenja'}</span>
               </div>
               <span className="text-[11px] text-slate-500">
-                Konjic, Bosnia & Herzegovina • Operating since 2008
+                Konjic, Bosnia & Herzegovina • Base Džajića Buk
               </span>
             </div>
           </div>
@@ -207,7 +207,7 @@ export const Footer: React.FC<FooterProps> = ({
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span>WhatsApp: +387 61 123 456</span>
                 </a>
               </p>
@@ -219,28 +219,28 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="mt-14 pt-8 border-t border-[#162622] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
           <p>© 2026 AdventureOps • Neretva Rafting Konjic. All rights reserved.</p>
           
-          <div className="flex items-center gap-4 sm:gap-6 text-slate-500">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-slate-500">
             <button
-              onClick={() => handleNav('safety')}
+              onClick={() => handleNav('privacy')}
               className="hover:text-slate-300 transition-colors cursor-pointer"
             >
               Privacy Policy
             </button>
-            <span className="text-slate-700">•</span>
+            <span className="text-slate-700" aria-hidden="true">•</span>
             <button
-              onClick={() => handleNav('safety')}
+              onClick={() => handleNav('terms')}
               className="hover:text-slate-300 transition-colors cursor-pointer"
             >
-              Terms & Safety
+              Terms & Cancellation
             </button>
-            <span className="text-slate-700">•</span>
+            <span className="text-slate-700" aria-hidden="true">•</span>
             {/* Low-emphasis Staff Access Link */}
             <button
               onClick={handleAdmin}
               className="text-slate-600 hover:text-slate-400 transition-colors cursor-pointer font-normal"
               title="Internal staff dispatch workspace"
             >
-              Staff access
+              Staff Access
             </button>
           </div>
         </div>

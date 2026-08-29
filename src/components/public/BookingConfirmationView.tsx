@@ -16,7 +16,6 @@ import {
   Clock,
   Users,
   ShieldCheck,
-  Sparkles,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { StatusBadge } from '../ui/StatusBadge';
@@ -136,7 +135,7 @@ export const BookingConfirmationView: React.FC<BookingConfirmationViewProps> = (
         <div className="bg-[#071310] border border-[#182C24] rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl">
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest">
-              <Sparkles className="w-3.5 h-3.5" />
+              <Search className="w-3.5 h-3.5" />
               <span>{language === 'en' ? 'Booking Lookup' : 'Pretraga Rezervacije'}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-display">

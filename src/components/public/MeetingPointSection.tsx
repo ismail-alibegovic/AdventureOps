@@ -166,7 +166,7 @@ export const MeetingPointSection: React.FC = () => {
               loading="lazy"
             />
             <div className="absolute top-4 left-4 bg-[#07110F]/95 border border-[#1F332C] backdrop-blur-md px-4 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center gap-2.5 shadow-xl">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
               <div>
                 <span className="font-bold block">Base Džajića Buk</span>
                 <span className="text-[11px] text-slate-400 font-normal">

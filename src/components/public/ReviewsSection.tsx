@@ -59,7 +59,7 @@ export const ReviewsSection: React.FC = () => {
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
           <SectionHeader
-            eyebrow={language === 'en' ? '5.0 Rating • 500+ Verified Guest Reviews' : '5.0 Ocjena • 500+ Verifikovanih Recenzija'}
+            eyebrow={language === 'en' ? 'Guest Testimonials' : 'Iskustva Gostiju'}
             title={t('reviews_title')}
             description={t('reviews_subtitle')}
             align="center"
@@ -107,14 +107,10 @@ export const ReviewsSection: React.FC = () => {
                   <div>
                     <div className="text-sm font-bold text-white">{rev.author}</div>
                     <div className="text-xs text-slate-400">{rev.country}</div>
-                    <div className="text-[10px] text-emerald-400/80 font-medium mt-0.5">
-                      {rev.tour}
-                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-950/60 px-2 py-1 rounded-md border border-emerald-800/40">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>{language === 'en' ? 'Verified Trip' : 'Verifikovano'}</span>
-                  </div>
+                  <span className="text-[11px] text-emerald-400 font-medium px-2 py-0.5 rounded-md bg-[#13211D] border border-[#1F332C]">
+                    {rev.tour}
+                  </span>
                 </div>
               </Card>
             </motion.div>

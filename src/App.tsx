@@ -19,6 +19,8 @@ import { Footer } from './components/public/Footer';
 import { BookingWizard } from './components/public/BookingWizard';
 import { BookingConfirmationView } from './components/public/BookingConfirmationView';
 import {
+  PrivacyPolicyPage,
+  TermsAndCancellationPage,
   SafetyStandardsPage,
   RakitnicaCanyonPage,
   MeetingPointDirectionsPage,
@@ -48,7 +50,9 @@ export default function App() {
   // Mode: 'public' or 'admin'
   const [appMode, setAppMode] = useState<'public' | 'admin'>(() => {
     if (typeof window !== 'undefined') {
-      if (window.location.hash === '#admin' || window.location.pathname.startsWith('/admin')) {
+      const hash = window.location.hash;
+      const path = window.location.pathname;
+      if (hash === '#admin' || path === '/admin' || path.startsWith('/admin/')) {
         return 'admin';
       }
     }
@@ -56,16 +60,23 @@ export default function App() {
   });
 
   useEffect(() => {
-    const handleHashChange = () => {
-      if (window.location.hash === '#admin') {
+    const handleRouteChange = () => {
+      const hash = window.location.hash;
+      const path = window.location.pathname;
+      if (hash === '#admin' || path === '/admin' || path.startsWith('/admin/')) {
         setAppMode('admin');
-      } else if (appMode === 'admin' && window.location.hash === '') {
+      } else {
         setAppMode('public');
       }
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [appMode]);
+
+    window.addEventListener('hashchange', handleRouteChange);
+    window.addEventListener('popstate', handleRouteChange);
+    return () => {
+      window.removeEventListener('hashchange', handleRouteChange);
+      window.removeEventListener('popstate', handleRouteChange);
+    };
+  }, []);
 
   const handleEnterAdmin = () => {
     window.location.hash = 'admin';
@@ -75,15 +86,19 @@ export default function App() {
 
   const handleExitAdmin = () => {
     if (window.location.hash === '#admin') {
-      window.history.pushState('', document.title, window.location.pathname);
+      window.history.pushState('', document.title, window.location.pathname.startsWith('/admin') ? '/' : window.location.pathname);
+    } else if (window.location.pathname.startsWith('/admin')) {
+      window.history.pushState('', document.title, '/');
     }
     setAppMode('public');
+    setPublicView('home');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Public View State: 'home' | 'book' | 'lookup' | 'safety' | 'canyon' | 'directions' | 'contact'
   const [publicView, setPublicView] = useState<string>('home');
   const [preselectedPackageId, setPreselectedPackageId] = useState<string | undefined>(undefined);
+  const [preselectedDate, setPreselectedDate] = useState<string | undefined>(undefined);
   const [lookupBookingCode, setLookupBookingCode] = useState<string | undefined>(undefined);
 
   // CMS Content for public view
@@ -111,8 +126,9 @@ export default function App() {
   const triggerAdminRefresh = () => setAdminRefreshKey((k) => k + 1);
 
   // Navigation handlers
-  const handleOpenBooking = (packageId?: string) => {
+  const handleOpenBooking = (packageId?: string, date?: string) => {
     setPreselectedPackageId(packageId);
+    setPreselectedDate(date);
     setPublicView('book');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -124,7 +140,7 @@ export default function App() {
   };
 
   const handleNavigateSection = (sectionId: string) => {
-    if (['safety', 'canyon', 'directions', 'contact'].includes(sectionId)) {
+    if (['safety', 'canyon', 'directions', 'contact', 'privacy', 'terms'].includes(sectionId)) {
       setPublicView(sectionId);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -241,8 +257,8 @@ export default function App() {
           <>
             <Hero
               packages={packages}
-              onStartBooking={(pkgId, date) => handleOpenBooking(pkgId)}
-              onBookNow={() => handleOpenBooking()}
+              onStartBooking={(pkgId, date) => handleOpenBooking(pkgId, date)}
+              onBookNow={(pkgId, date) => handleOpenBooking(pkgId, date)}
               onExplorePackages={() => handleNavigateSection('packages')}
             />
             <PackagesSection
@@ -250,7 +266,7 @@ export default function App() {
               onSelectPackage={(pkgId) => handleOpenBooking(pkgId)}
             />
             <RakitnicaRouteSection
-              onBookRakitnica={() => handleOpenBooking('pkg-neretva-rakitnica')}
+              onBookRakitnica={() => handleOpenBooking('pkg-neretva-adrenaline')}
             />
             <EquipmentSafetySection />
             <GallerySection gallery={gallery} />
@@ -263,6 +279,7 @@ export default function App() {
         {publicView === 'book' && (
           <BookingWizard
             preselectedPackageId={preselectedPackageId}
+            initialDate={preselectedDate}
             onBack={() => setPublicView('home')}
             onViewBooking={(code) => handleOpenLookup(code)}
           />
@@ -279,10 +296,24 @@ export default function App() {
           <SafetyStandardsPage onBack={() => setPublicView('home')} />
         )}
 
+        {publicView === 'privacy' && (
+          <PrivacyPolicyPage
+            onBack={() => setPublicView('home')}
+            onBook={() => handleOpenBooking()}
+          />
+        )}
+
+        {publicView === 'terms' && (
+          <TermsAndCancellationPage
+            onBack={() => setPublicView('home')}
+            onBook={() => handleOpenBooking()}
+          />
+        )}
+
         {publicView === 'canyon' && (
           <RakitnicaCanyonPage
             onBack={() => setPublicView('home')}
-            onBook={() => handleOpenBooking('pkg-neretva-rakitnica')}
+            onBook={() => handleOpenBooking('pkg-neretva-adrenaline')}
           />
         )}
 

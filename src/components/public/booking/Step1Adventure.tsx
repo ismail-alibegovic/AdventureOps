@@ -1,6 +1,7 @@
 import React from 'react';
 import { Package } from '../../../types';
 import { Check, Clock, Compass, Waves, Sparkles } from 'lucide-react';
+import { resolveImageUrl } from '../../../lib/imageAssets';
 
 interface Step1AdventureProps {
   packages: Package[];
@@ -59,7 +60,7 @@ export const Step1Adventure: React.FC<Step1AdventureProps> = ({
               {/* Package Image Thumbnail */}
               <div className="relative h-44 sm:h-48 w-full overflow-hidden bg-[#0A1612]">
                 <img
-                  src={pkg.image_url || 'https://images.unsplash.com/photo-1530866495561-507c9faab2ed?auto=format&fit=crop&w=800&q=80'}
+                  src={resolveImageUrl(pkg.image_url) || 'https://images.unsplash.com/photo-1530866495561-507c9faab2ed?auto=format&fit=crop&w=800&q=80'}
                   alt={name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   referrerPolicy="no-referrer"

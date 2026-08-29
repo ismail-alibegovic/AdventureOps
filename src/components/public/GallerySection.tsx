@@ -4,6 +4,7 @@ import { GalleryItem } from '../../types';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Maximize2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { resolveImageUrl } from '../../lib/imageAssets';
 
 interface GallerySectionProps {
   gallery?: GalleryItem[];
@@ -11,21 +12,7 @@ interface GallerySectionProps {
 
 export const GallerySection: React.FC<GallerySectionProps> = ({ gallery = [] }) => {
   const { t, language } = useTranslation();
-  const [activeCategory, setActiveCategory] = useState<string>('all');
   const [previewImage, setPreviewImage] = useState<GalleryItem | null>(null);
-
-  const categories = [
-    { id: 'all', label: t('gallery_filter_all') },
-    { id: 'rafting', label: t('gallery_filter_rafting') },
-    { id: 'canyon', label: t('gallery_filter_canyon') },
-    { id: 'adventure', label: t('gallery_filter_adventure') },
-    { id: 'food', label: t('gallery_filter_food') },
-  ];
-
-  const filtered =
-    activeCategory === 'all'
-      ? gallery
-      : gallery.filter((item) => item.category === activeCategory);
 
   return (
     <section id="gallery" className="py-24 bg-[#07110F] text-slate-100 border-t border-[#162622]">
@@ -44,29 +31,9 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ gallery = [] }) 
           />
         </motion.div>
 
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-12 mt-10">
-          {categories.map((cat) => {
-            const isActive = activeCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer ${
-                  isActive
-                    ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-950/40 scale-[1.02] font-extrabold'
-                    : 'bg-[#0E1A17] text-slate-300 hover:text-white hover:bg-[#13211D] border border-[#1F332C]'
-                }`}
-              >
-                {cat.label}
-              </button>
-            );
-          })}
-        </div>
-
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((item, idx) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+          {gallery.map((item, idx) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -78,7 +45,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ gallery = [] }) 
               className="group relative rounded-2xl overflow-hidden bg-[#0E1A17] border border-[#1F332C] h-72 shadow-md transition-all duration-200 hover:border-emerald-500/40 cursor-pointer"
             >
               <img
-                src={item.image_url}
+                src={resolveImageUrl(item.image_url)}
                 alt={item.title}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 referrerPolicy="no-referrer"
@@ -90,10 +57,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ gallery = [] }) 
                   </div>
                 </div>
                 <div>
-                  <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800/40">
-                    {item.category}
-                  </span>
-                  <h4 className="text-base font-bold text-white leading-snug font-display mt-1.5">
+                  <h4 className="text-base font-bold text-white leading-snug font-display">
                     {item.title}
                   </h4>
                 </div>
@@ -120,7 +84,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ gallery = [] }) 
             >
               <div className="relative max-h-[75vh] overflow-hidden bg-black flex items-center justify-center">
                 <img
-                  src={previewImage.image_url}
+                  src={resolveImageUrl(previewImage.image_url)}
                   alt={previewImage.title}
                   className="w-full h-full object-contain max-h-[75vh]"
                   referrerPolicy="no-referrer"
@@ -134,9 +98,6 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ gallery = [] }) 
               </div>
               <div className="p-5 flex items-center justify-between border-t border-[#1F332C]">
                 <div>
-                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                    {previewImage.category}
-                  </span>
                   <h3 className="text-lg font-bold text-white font-display">
                     {previewImage.title}
                   </h3>

@@ -6,7 +6,6 @@ import {
   ArrowRight,
   CheckCircle2,
   ChevronRight,
-  Sparkles,
   Clock,
   Compass,
   Users,
@@ -54,7 +53,7 @@ export const Hero: React.FC<HeroProps> = ({
   const selectedPkgObj = packages.find((p) => p.id === selectedPkgId) || packages[0];
 
   return (
-    <div className="relative overflow-hidden bg-[#07110F] text-slate-100 min-h-[90vh] flex items-center bg-hero-glow">
+    <div className="relative overflow-hidden bg-[#07110F] text-slate-100 min-h-[90vh] flex items-center">
       {/* Background Image with Initial Load Cinematic Scale */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <motion.img
@@ -81,7 +80,7 @@ export const Hero: React.FC<HeroProps> = ({
               transition={{ duration: 0.4, ease: 'easeOut' }}
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0E1A17]/90 border border-emerald-500/40 text-emerald-300 text-xs font-semibold tracking-wide backdrop-blur-md shadow-sm"
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
               <span>{t('hero_tagline')}</span>
             </motion.div>
 
@@ -171,19 +170,17 @@ export const Hero: React.FC<HeroProps> = ({
             className="lg:col-span-5"
           >
             <div className="bg-[#0E1A17]/95 border border-[#1F332C] rounded-2xl p-6 sm:p-7 shadow-2xl backdrop-blur-md relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-36 h-36 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
               <div className="border-b border-[#1F332C] pb-4 mb-5 flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-0.5">
-                    {language === 'en' ? 'Live Availability Check' : 'Brza Provjera Termina'}
+                    {language === 'en' ? 'Departure Availability' : 'Provjera Termina'}
                   </span>
                   <h3 className="text-xl font-bold text-white font-display">
-                    {language === 'en' ? 'Check Live River Dates' : 'Provjeri Slobodne Termine'}
+                    {language === 'en' ? 'Check Available Dates' : 'Slobodni Termini'}
                   </h3>
                 </div>
                 <div className="w-9 h-9 rounded-xl bg-[#13211D] border border-[#1F332C] flex items-center justify-center text-emerald-400">
-                  <Sparkles className="w-4 h-4" />
+                  <Calendar className="w-4 h-4" />
                 </div>
               </div>
 
