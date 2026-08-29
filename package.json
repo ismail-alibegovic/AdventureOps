@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=esm --banner:js=\"import * as __module from 'module'; const require = __module.createRequire(import.meta.url);\" --sourcemap --outfile=dist/server/index.js",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=esm --banner:js=\"import * as __module from 'module'; const require = __module.createRequire(process.cwd() + '/dist/server/index.js');\" --sourcemap --outfile=dist/server/index.js",
     "start": "node dist/server/index.js",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
