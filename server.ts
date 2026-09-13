@@ -3,10 +3,8 @@ import path from 'path';
 import { apiRouter } from './server/routes/api';
 import { getDatabase, ensureDemoFutureDepartures, saveDatabase } from './server/db/database';
 
-async function startServer() {
+export async function createApp() {
   const app = express();
-  const PORT = Number(process.env.PORT || 3000);
-  const HOST = process.env.HOST || '0.0.0.0';
 
   // Initialize DB and ensure rolling 30-day demo departure availability
   const db = getDatabase();
@@ -60,11 +58,25 @@ async function startServer() {
     });
   }
 
+  return app;
+}
+
+export async function startServer() {
+  const app = await createApp();
+  const PORT = Number(process.env.PORT || 3000);
+  const HOST = process.env.HOST || '0.0.0.0';
+
   app.listen(PORT, HOST, () => {
     console.log(`Neretva Rafting Konjic Platform running on http://${HOST}:${PORT}`);
   });
 }
 
-startServer().catch((err) => {
+if (process.env.VERCEL !== '1') {
+  startServer().catch((err) => {
+    console.error('Failed to start server:', err);
+  });
+}
+
+process.on('unhandledRejection', (err) => {
   console.error('Failed to start server:', err);
 });
